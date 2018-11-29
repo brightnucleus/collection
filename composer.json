@@ -1,0 +1,22 @@
+{
+    "name": "brightnucleus/collection",
+    "description": "Collection class with implementations for Doctrine & WP elements",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Alain Schlesser",
+            "email": "alain.schlesser@gmail.com"
+        }
+    ],
+    "require": {
+        "doctrine/collections": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6"
+    },
+    "autoload": {
+        "psr-4": {
+            "BrightNucleus\\Collection\\": "src/"
+        }
+    }
+}
