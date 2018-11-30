@@ -30,7 +30,7 @@ final class PostCollectionTest extends WP_UnitTestCase {
 		$post_b  = $factory->post->create_and_get();
 
 		$query_args = [
-			'post_id__in' => [ $post_a->ID, $post_b->ID ],
+			'post__in' => [ $post_a->ID, $post_b->ID ],
 		];
 		$posts      = new PostCollection( new WP_Query( $query_args ) );
 
