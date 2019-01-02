@@ -433,8 +433,14 @@ abstract class WPQueryCollectionAbstract implements WPQueryCollection {
 			return '';
 		}
 
+		$expression = $this->criteria->getWhereExpression();
+
+		if ( null === $expression ) {
+			return '';
+		}
+
 		$visitor = new WPQuerySQLExpressionVisitor();
-		return 'WHERE ' . $visitor->dispatch( $this->criteria->getWhereExpression() );
+		return 'WHERE ' . $visitor->dispatch( $expression );
 	}
 
 	private function getOrderByClause(): string {
