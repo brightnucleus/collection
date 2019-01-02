@@ -11,7 +11,9 @@
 
 namespace BrightNucleus\Collection;
 
+use BrightNucleus\Exception\InvalidArgumentException;
 use Doctrine\Common\Collections\ArrayCollection;
+use stdClass;
 use WP_Query;
 
 /**
@@ -64,6 +66,7 @@ abstract class AbstractWPQueryCollection extends LazilyHydratedCollection implem
 	 * {@inheritDoc}
 	 */
 	public function add( $element ) {
+		$element = $this->normalizeEntity( $element );
 		$this->assertType( $element );
 		return parent::add( $element );
 	}
@@ -105,27 +108,46 @@ abstract class AbstractWPQueryCollection extends LazilyHydratedCollection implem
 		global $wpdb;
 		$this->collection = new ArrayCollection();
 
+		$posts = [];
+
 		if ( $this->query ) {
 			$posts = $this->query->get_posts();
-			foreach ( $posts as $post ) {
-				$this->collection->add( $post );
-			}
-
-			return;
-		}
-
-		if ( $this->criteria ) {
+		} elseif ( $this->criteria ) {
 			$query = $this->getQueryGenerator()->getQuery();
 
 			$posts = $wpdb->get_results( $query );
-			if ( $posts ) {
-				$posts = array_map( 'get_post', $posts );
-			}
+		}
 
-			foreach ( $posts as $post ) {
-				$this->collection->add( $post );
+		if ( empty( $posts ) ) {
+			return;
+		}
+
+		foreach ( $posts as $post ) {
+			$post = $this->normalizeEntity( $post );
+			$this->assertType( $post );
+			$this->collection->add( $post );
+		}
+	}
+
+	/**
+	 * Normalize the entity and cast it to the correct type.
+	 *
+	 * @param mixed $entity Entity to normalize.
+	 * @return mixed Normalized entity.
+	 */
+	protected function normalizeEntity( $entity ) {
+		if ( $entity instanceof stdClass ) {
+			$entity = get_post( $entity );
+		}
+
+		if ( $this instanceof HasEntityWrapper ) {
+			$wrapper = $this->getEntityWrapperClass();
+			if ( ! $entity instanceof $wrapper ) {
+				$entity = new $wrapper( $entity );
 			}
 		}
+
+		return $entity;
 	}
 
 	/**
@@ -134,7 +156,7 @@ abstract class AbstractWPQueryCollection extends LazilyHydratedCollection implem
 	 *
 	 * @param mixed $element Element to assert the type of.
 	 *
-	 * @throws \InvalidArgumentException If the type didn't match.
+	 * @throws InvalidArgumentException If the type didn't match.
 	 */
 	abstract protected function assertType( $element ): void;
 

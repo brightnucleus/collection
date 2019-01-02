@@ -79,21 +79,7 @@ abstract class AbstractPropertyCollection
 	 * {@inheritDoc}
 	 */
 	public function add( $element ) {
-		if ( ! $element instanceof Property ) {
-			$element = new Property( $element );
-		}
-
-		if ( ! $element instanceof Property ) {
-			$type = is_object( $element )
-				? get_class( $element )
-				: gettype( $element );
-
-			throw new InvalidArgumentException(
-				"Element of type '{$type}' is not a valid Property."
-			);
-		}
-
-		return parent::add( $element );
+		return parent::add( $this->normalizeEntity( $element ) );
 	}
 
 	/**
@@ -130,20 +116,35 @@ abstract class AbstractPropertyCollection
 		global $wpdb;
 		$this->collection = new ArrayCollection();
 
+		$posts = [];
+
 		if ( $this->criteria ) {
 			$query = $this->getQueryGenerator()->getQuery();
 
-			$properties = $wpdb->get_results( $query );
-			if ( $properties ) {
-				$properties = array_map( function( $property ) {
-					return new Property( $property );
-				}, $properties );
-			}
-
-			foreach ( $properties as $property ) {
-				$this->collection->add( $property );
-			}
+			$posts = $wpdb->get_results( $query );
 		}
+
+		if ( empty( $posts ) ) {
+			return;
+		}
+
+		foreach ( $posts as $post ) {
+			$this->collection->add( $this->normalizeEntity( $post ) );
+		}
+	}
+
+	/**
+	 * Normalize the entity and cast it to the correct type.
+	 *
+	 * @param mixed $entity Entity to normalize.
+	 * @return mixed Normalized entity.
+	 */
+	protected function normalizeEntity( $entity ) {
+		if ( ! $entity instanceof Property ) {
+			$entity = new Property( $entity );
+		}
+
+		return $entity;
 	}
 
 	/**
