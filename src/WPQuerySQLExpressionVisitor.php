@@ -18,17 +18,20 @@ use Doctrine\Common\Collections\Expr\Value;
 use RuntimeException;
 
 /**
- * Class WPQueryCollectionAbstract
+ * Class AbstractWPQueryCollection
  *
  * @package BrightNucleus\Collection
  * @author  Alain Schlesser <alain.schlesser@gmail.com>
  */
-final class WPQuerySQLExpressionVisitor extends ExpressionVisitor {
+class WPQuerySQLExpressionVisitor extends ExpressionVisitor {
+
+	/** @var string */
+	protected $tableName;
 
 	/**
 	 * @var array
 	 */
-	static private $comparisonMap = [
+	static protected $comparisonMap = [
 		Comparison::EQ          => '= %s',
 		Comparison::IS          => '= %s',
 		Comparison::NEQ         => '!= %s',
@@ -42,6 +45,15 @@ final class WPQuerySQLExpressionVisitor extends ExpressionVisitor {
 		Comparison::STARTS_WITH => 'LIKE %s',
 		Comparison::ENDS_WITH   => 'LIKE %s',
 	];
+
+	/**
+	 * Instantiate a WPQuerySQLExpressionVisitor object.
+	 *
+	 * @param string $tableName Name of the table to generate SQL for.
+	 */
+	public function __construct( string $tableName ) {
+		$this->tableName = $tableName;
+	}
 
 	/**
 	 * Converts a comparison expression into the target query language output.
@@ -120,9 +132,9 @@ final class WPQuerySQLExpressionVisitor extends ExpressionVisitor {
 	 * Get the SQL statement for a single condition.
 	 *
 	 * @param string $field
-	 * @param      $value
-	 * @param null $assoc
-	 * @param null $comparison
+	 * @param        $value
+	 * @param null   $assoc
+	 * @param null   $comparison
 	 * @return string
 	 */
 	protected function getSelectConditionStatementSQL( $field, $value, $assoc = null, $comparison = null ) {
@@ -208,9 +220,9 @@ final class WPQuerySQLExpressionVisitor extends ExpressionVisitor {
 	 *
 	 * @return string[]
 	 */
-	private function getSelectConditionStatementColumnSQL( $field, $assoc = null ) {
+	protected function getSelectConditionStatementColumnSQL( $field, $assoc = null ) {
 		global $wpdb;
 
-		return [ "{$wpdb->get_blog_prefix()}posts.{$field}" ];
+		return [ "{$wpdb->get_blog_prefix()}{$this->tableName}.{$field}" ];
 	}
 }

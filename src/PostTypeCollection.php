@@ -11,6 +11,7 @@
 
 namespace BrightNucleus\Collection;
 
+use BrightNucleus\Exception\InvalidArgumentException;
 use WP_Post;
 
 /**
@@ -19,9 +20,7 @@ use WP_Post;
  * @package BrightNucleus\Collection
  * @author  Alain Schlesser <alain.schlesser@gmail.com>
  */
-abstract class PostTypeCollection extends WPQueryCollectionAbstract {
-
-	const TABLE_NAME = 'posts';
+abstract class PostTypeCollection extends AbstractWPQueryCollection {
 
 	/**
 	 * Assert that the element corresponds to the correct type for the
@@ -29,15 +28,24 @@ abstract class PostTypeCollection extends WPQueryCollectionAbstract {
 	 *
 	 * @param mixed $element Element to assert the type of.
 	 *
-	 * @throws \InvalidArgumentException If the type didn't match.
+	 * @throws InvalidArgumentException If the type didn't match.
 	 */
 	protected function assertType( $element ): void {
 		$postType = static::getPostType();
 		if ( ! $element instanceof WP_Post || $element->post_type !== $postType ) {
-			throw new \InvalidArgumentException(
+			throw new InvalidArgumentException(
 				"Invalid type of element, WP_Post object of type '{$postType}' required."
 			);
 		}
+	}
+
+	/**
+	 * Get the query generator to use.
+	 *
+	 * @return QueryGenerator
+	 */
+	protected function getQueryGenerator(): QueryGenerator {
+		return new PostTypeQueryGenerator( $this->criteria );
 	}
 
 	/**
@@ -47,12 +55,4 @@ abstract class PostTypeCollection extends WPQueryCollectionAbstract {
 	 */
 	abstract public static function getPostType(): string;
 
-	/**
-	 * Get the table name that the collection is based on.
-	 *
-	 * @return string
-	 */
-	protected function getTableName(): string {
-		return static::TABLE_NAME;
-	}
 }

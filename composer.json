@@ -9,7 +9,8 @@
         }
     ],
     "require": {
-        "doctrine/collections": "*"
+        "doctrine/collections": "*",
+        "brightnucleus/exceptions": "^0.3.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^6"

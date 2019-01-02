@@ -66,7 +66,8 @@ class WPQueryIterator implements Iterator {
 	 *     evaluated. Returns true on success or false on failure.
 	 */
 	public function valid() {
-		return $this->collection->is_valid();
+		// TODO: parent collection does not seem to have a valid() method?
+		return $this->collection->valid();
 	}
 
 	/**
