@@ -13,7 +13,6 @@ namespace BrightNucleus\Collection;
 
 use Doctrine\Common\Collections\Criteria as DoctrineCommonCriteria;
 use Doctrine\Common\Collections\Expr\Expression;
-use RuntimeException;
 
 class Criteria extends DoctrineCommonCriteria {
 

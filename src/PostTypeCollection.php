@@ -54,5 +54,4 @@ abstract class PostTypeCollection extends AbstractWPQueryCollection {
 	 * @return string
 	 */
 	abstract public static function getPostType(): string;
-
 }

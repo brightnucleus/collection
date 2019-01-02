@@ -22,7 +22,9 @@ use WP_Post;
  * @package BrightNucleus\Collection
  * @author  Alain Schlesser <alain.schlesser@gmail.com>
  */
-abstract class AbstractPropertyCollection extends LazilyHydratedCollection implements PropertyCollection {
+abstract class AbstractPropertyCollection
+	extends LazilyHydratedCollection
+	implements PropertyCollection {
 
 	/**
 	 * Post ID of the post that the post meta belongs to.

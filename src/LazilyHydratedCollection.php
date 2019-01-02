@@ -13,10 +13,9 @@ namespace BrightNucleus\Collection;
 
 use Closure;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 
 /**
- * Class WPQueryCollection
+ * Class LazilyHydratedCollection
  *
  * @package BrightNucleus\Collection
  * @author  Alain Schlesser <alain.schlesser@gmail.com>

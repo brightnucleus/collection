@@ -11,7 +11,6 @@
 
 namespace BrightNucleus\Collection;
 
-use Doctrine\Common\Collections\Collection;
 use RuntimeException;
 
 /**

@@ -11,8 +11,6 @@
 
 namespace BrightNucleus\Collection;
 
-use Doctrine\Common\Collections\Collection;
-
 /**
  * Interface PropertyCollection
  *
