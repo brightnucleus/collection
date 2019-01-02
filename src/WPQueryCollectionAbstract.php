@@ -417,17 +417,34 @@ abstract class WPQueryCollectionAbstract implements WPQueryCollection {
 	 */
 	abstract protected function getTableName(): string;
 
+	/**
+	 * Get SELECT clause.
+	 *
+	 * @return string SELECT clause.
+	 */
 	protected function getSelectClause() {
 		$fields = [ '*' ];
 		return 'SELECT ' . implode( ',', $fields );
 	}
 
+	/**
+	 * Get the FROM clause.
+	 *
+	 * @return string FROM clause.
+	 */
 	protected function getFromClause(): string {
 		global $wpdb;
 		$from = $wpdb->get_blog_prefix() . static::getTableName();
 		return "FROM {$from}";
 	}
 
+	/**
+	 * Get the WHERE clause.
+	 *
+	 * Can be an empty string.
+	 *
+	 * @return string WHERE clause.
+	 */
 	protected function getWhereClause(): string {
 		if ( $this->criteria instanceof NullCriteria ) {
 			return '';
@@ -443,6 +460,13 @@ abstract class WPQueryCollectionAbstract implements WPQueryCollection {
 		return 'WHERE ' . $visitor->dispatch( $expression );
 	}
 
+	/**
+	 * Get the ORDER BY clause.
+	 *
+	 * Can be an empty string.
+	 *
+	 * @return string ORDER BY clause.
+	 */
 	private function getOrderByClause(): string {
 		$orderings = $this->criteria->getOrderings();
 
@@ -458,6 +482,13 @@ abstract class WPQueryCollectionAbstract implements WPQueryCollection {
 		return 'ORDER BY ' . implode( ', ', $strings );
 	}
 
+	/**
+	 * Get the LIMIT clause.
+	 *
+	 * Can be an empty string.
+	 *
+	 * @return string LIMIT clause.
+	 */
 	protected function getLimitClause(): string {
 		$offset = $this->criteria->getFirstResult();
 		$limit  = $this->criteria->getMaxResults();
