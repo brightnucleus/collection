@@ -58,12 +58,14 @@ abstract class AbstractPropertyCollection
 
 		$this->postID = $postID;
 
+		$expr           = Criteria::expr();
+		$this->criteria = Criteria::create()
+		                          ->where( $expr->eq( 'post_id', $postID ) );
+
 		if ( $argument instanceof Criteria ) {
-			$this->criteria = $argument;
+			$this->criteria = $this->criteria->merge( $argument );
 			return;
 		}
-
-		$this->criteria = new NullCriteria();
 
 		if ( is_iterable( $argument ) ) {
 			$this->collection = new ArrayCollection();
@@ -73,8 +75,6 @@ abstract class AbstractPropertyCollection
 			}
 			return;
 		}
-
-		$this->clear();
 	}
 
 	/**
@@ -103,7 +103,15 @@ abstract class AbstractPropertyCollection
 	 * {@inheritDoc}
 	 */
 	public function get( $key ) {
-		return $this->getProperty( $key )->getValue();
+		if ( $this->isHydrated ) {
+			return $this->getProperty( $key )->getValue();
+		}
+
+		$expr     = Criteria::expr();
+		$criteria = Criteria::create()
+		                    ->where( $expr->eq( 'key', $key ) );
+
+		return $this->matching( $criteria )->first()->getValue();
 	}
 
 	/**
