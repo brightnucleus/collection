@@ -20,6 +20,15 @@ namespace BrightNucleus\Collection;
 interface PropertyCollection extends Collection {
 
 	/**
+	 * Get the property object stored under a given key.
+	 *
+	 * @param string $key Key to retrieve the property for.
+	 *
+	 * @return Property Property stored under the requested key.
+	 */
+	public function getProperty( string $key ): Property;
+
+	/**
 	 * Selects all elements from a selectable that match the expression and
 	 * returns a new collection containing these elements.
 	 *

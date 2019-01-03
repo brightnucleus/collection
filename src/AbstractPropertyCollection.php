@@ -11,7 +11,9 @@
 
 namespace BrightNucleus\Collection;
 
+use ArrayIterator;
 use BrightNucleus\Exception\InvalidArgumentException;
+use BrightNucleus\Exception\RangeException;
 use Doctrine\Common\Collections\ArrayCollection;
 use WP_Meta_Query;
 use WP_Post;
@@ -78,8 +80,55 @@ abstract class AbstractPropertyCollection
 	/**
 	 * {@inheritDoc}
 	 */
+	public function containsKey( $key ) {
+		$this->hydrate();
+		return $this->exists(
+			function ( $index, $element ) use ( $key ) {
+				/** @var Property $element */
+				return $element->getKey() === $key;
+			}
+		);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public function add( $element ) {
-		return parent::add( $this->normalizeEntity( $element ) );
+		$this->hydrate();
+		$element = $this->normalizeEntity( $element );
+		return $this->collection[ $element->getKey() ] = $element;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function get( $key ) {
+		return $this->getProperty( $key )->getValue();
+	}
+
+	/**
+	 * Get the property object stored under a given key.
+	 *
+	 * @param string $key Key to retrieve the property for.
+	 *
+	 * @return Property Property stored under the requested key.
+	 */
+	public function getProperty( string $key ): Property {
+		$property = parent::get( $key );
+
+		if ( null === $property ) {
+			throw new RangeException( "Could not retrieve property for key {$key}." );
+		}
+
+		return $property;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getIterator() {
+		$this->hydrate();
+		return new ArrayIterator( $this->toArray() );
 	}
 
 	/**
@@ -92,9 +141,8 @@ abstract class AbstractPropertyCollection
 	 */
 	public function matching( Criteria $criteria ) {
 		if ( $this->isHydrated ) {
-			$this->collection = new static(
-				$this->postID,
-				$this->collection->matching( $criteria )
+			$this->collection = new ArrayCollection(
+				$this->collection->matching( $criteria )->toArray()
 			);
 			$this->criteria   = $criteria;
 			$this->isHydrated = true;
@@ -129,7 +177,8 @@ abstract class AbstractPropertyCollection
 		}
 
 		foreach ( $posts as $post ) {
-			$this->collection->add( $this->normalizeEntity( $post ) );
+			$property = $this->normalizeEntity( $post );
+			$this->collection[ $property->getKey() ] = $property;
 		}
 	}
 
@@ -154,7 +203,7 @@ abstract class AbstractPropertyCollection
 		$properties = parent::toArray();
 
 		return array_map(
-			function ( Property $property ) { return $property->toArray(); },
+			function ( Property $property ) { return $property->getValue(); },
 			$properties
 		);
 	}
