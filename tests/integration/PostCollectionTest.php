@@ -139,4 +139,28 @@ final class PostCollectionTest extends WP_UnitTestCase {
 		$this->assertInstanceOf( WP_Post::class, $matched_posts[1] );
 		$this->assertEquals( $post_c->ID, $matched_posts[1]->ID );
 	}
+
+	public function test_it_returns_same_references_for_same_ids() {
+		$factory = new WP_UnitTest_Factory();
+		$post_a  = $factory->post->create_and_get();
+		$post_b  = $factory->post->create_and_get();
+		$post_c  = $factory->post->create_and_get();
+		$post_d  = $factory->post->create_and_get();
+
+		$posts_a = new PostCollection( new NullCriteria() );
+		$posts_b = new PostCollection( new NullCriteria() );
+
+		$expr     = Criteria::expr();
+		$criteria = Criteria::create()
+		                    ->where( $expr->eq( 'ID', $post_b->ID ) )
+		                    ->orWhere( $expr->eq( 'ID', $post_c->ID ) );
+
+		$matched_posts_a = $posts_a->matching( $criteria );
+		$matched_posts_b = $posts_b->matching( $criteria );
+
+		var_dump( $matched_posts_a[0] );
+		var_dump( $matched_posts_b[0] );
+		$this->assertSame( $matched_posts_a[0], $matched_posts_b[0] );
+		$this->assertSame( $matched_posts_a[1], $matched_posts_b[1] );
+	}
 }
