@@ -97,6 +97,11 @@ abstract class WPQueryRepository implements Repository {
 	 */
 	abstract protected function getDefaultCriteria(): Criteria;
 
+	/**
+	 * Get the fallback criteria to use.
+	 *
+	 * @return Criteria
+	 */
 	protected function getFallbackCriteria(): Criteria {
 		return Criteria::create()
 		               ->setFirstResult( 0 )

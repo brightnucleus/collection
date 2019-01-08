@@ -16,6 +16,7 @@ interface Repository {
 	/**
 	 * Find a single element by its ID.
 	 *
+	 * @param mixed $id ID of the element to find.
 	 * @return mixed
 	 */
 	public function find( $id );

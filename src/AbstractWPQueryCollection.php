@@ -12,8 +12,10 @@
 namespace BrightNucleus\Collection;
 
 use BrightNucleus\Exception\InvalidArgumentException;
+use BrightNucleus\Exception\RuntimeException;
 use Doctrine\Common\Collections\ArrayCollection;
 use stdClass;
+use WP_Post;
 use WP_Query;
 
 /**
@@ -23,6 +25,8 @@ use WP_Query;
  * @author  Alain Schlesser <alain.schlesser@gmail.com>
  */
 abstract class AbstractWPQueryCollection extends LazilyHydratedCollection implements WPQueryCollection {
+
+	use IdentityMapping;
 
 	/**
 	 * Query to use for hydrating the collection.
@@ -34,10 +38,15 @@ abstract class AbstractWPQueryCollection extends LazilyHydratedCollection implem
 	/**
 	 * Instantiate a AbstractWPQueryCollection object.
 	 *
-	 * @param Criteria|WP_Query|Iterable|null $argument Construction argument to
-	 *                                                  use.
+	 * @param Criteria|WP_Query|Iterable|null $argument    Construction
+	 *                                                     argument to use.
+	 * @param IdentityMap                     $identityMap Optional. Identity
+	 *                                                     map implementation
+	 *                                                     to use.
 	 */
-	public function __construct( $argument = null ) {
+	public function __construct( $argument = null, IdentityMap $identityMap = null ) {
+		$this->identityMap = $identityMap ?? new GenericIdentityMap();
+
 		if ( $argument instanceof Criteria ) {
 			$this->criteria = $argument;
 			return;
@@ -66,7 +75,12 @@ abstract class AbstractWPQueryCollection extends LazilyHydratedCollection implem
 	 * {@inheritDoc}
 	 */
 	public function add( $element ) {
-		$element = $this->normalizeEntity( $element );
+		$element = $this->deduplicated(
+			$this->deduceId( $element ),
+			function ( $id ) use ( $element ) {
+				return $this->normalizeEntity( $element );
+			}
+		);
 		$this->assertType( $element );
 		return parent::add( $element );
 	}
@@ -123,7 +137,12 @@ abstract class AbstractWPQueryCollection extends LazilyHydratedCollection implem
 		}
 
 		foreach ( $posts as $post ) {
-			$post = $this->normalizeEntity( $post );
+			$post = $this->deduplicated(
+				$this->deduceId( $post ),
+				function ( $id ) use ( $post ) {
+					return $this->normalizeEntity( $post );
+				}
+			);
 			$this->assertType( $post );
 			$this->collection->add( $post );
 		}
@@ -148,6 +167,66 @@ abstract class AbstractWPQueryCollection extends LazilyHydratedCollection implem
 		}
 
 		return $entity;
+	}
+
+	/**
+	 * Deduce the ID of a given element.
+	 *
+	 * This is used for identity-mapping the elements to avoid handing out
+	 * conflicting references.
+	 *
+	 * @param mixed $element Element to deduce the ID for.
+	 * @return int|string ID that was detected.
+	 */
+	protected function deduceId( $element ) {
+		static $methods = [
+			'getId',
+			'get_id',
+			'ID',
+			'id',
+			'Id',
+		];
+
+		static $properties = [
+			'ID',
+			'id',
+			'Id',
+		];
+
+		if ( is_object( $element ) ) {
+			if ( $element instanceof Entity ) {
+				return $element->getId();
+			}
+
+			if ( $element instanceof WP_Post ) {
+				return $element->ID;
+			}
+
+			foreach ( $methods as $method ) {
+				if ( method_exists( $element, $method ) ) {
+					return $element->$method();
+				}
+			}
+
+			foreach ( $properties as $property ) {
+				if ( property_exists( $element, $property ) ) {
+					return $element->$property;
+				}
+			}
+		} elseif ( is_array( $element ) ) {
+			foreach ( $properties as $property ) {
+				if ( array_key_exists( $property, $element ) ) {
+					return $element[ $property ];
+				}
+			}
+		}
+
+		throw new RuntimeException( sprintf(
+			'Could not deduce ID for element of type "%s".',
+			is_object( $element )
+				? get_class( $element )
+				: gettype( $element )
+		) );
 	}
 
 	/**
