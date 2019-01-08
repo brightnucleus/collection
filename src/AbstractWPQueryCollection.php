@@ -45,7 +45,11 @@ abstract class AbstractWPQueryCollection extends LazilyHydratedCollection implem
 	 *                                                     to use.
 	 */
 	public function __construct( $argument = null, IdentityMap $identityMap = null ) {
-		$this->identityMap = $identityMap ?? new GenericIdentityMap();
+		if ( null === $identityMap ) {
+			$identityMap = $this->createIdentityMap();
+		}
+
+		$this->identityMap = $identityMap;
 
 		if ( $argument instanceof Criteria ) {
 			$this->criteria = $argument;
@@ -227,6 +231,27 @@ abstract class AbstractWPQueryCollection extends LazilyHydratedCollection implem
 				? get_class( $element )
 				: gettype( $element )
 		) );
+	}
+
+	/**
+	 * Create an instance of the identity map to use.
+	 *
+	 * @return IdentityMap Identity map to use.
+	 */
+	protected function createIdentityMap(): IdentityMap {
+		return IdentityMapPool::getIdentityMap(
+			$this->getIdentityMapType(),
+			GenericIdentityMap::class
+		);
+	}
+
+	/**
+	 * Get the type of identity map to use.
+	 *
+	 * @return string Type of the identity map.
+	 */
+	protected function getIdentityMapType(): string {
+		return get_class( $this );
 	}
 
 	/**
