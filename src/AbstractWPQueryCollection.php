@@ -28,6 +28,9 @@ abstract class AbstractWPQueryCollection extends LazilyHydratedCollection implem
 
 	use IdentityMapping;
 
+	/** @var IdentityMapPool */
+	protected static $identity_map_pool;
+
 	/**
 	 * Query to use for hydrating the collection.
 	 *
@@ -239,7 +242,11 @@ abstract class AbstractWPQueryCollection extends LazilyHydratedCollection implem
 	 * @return IdentityMap Identity map to use.
 	 */
 	protected function createIdentityMap(): IdentityMap {
-		return IdentityMapPool::getIdentityMap(
+		if ( null === static::$identity_map_pool ) {
+			static::$identity_map_pool = new IdentityMapPool();
+		}
+
+		return static::$identity_map_pool->getIdentityMap(
 			$this->getIdentityMapType(),
 			GenericIdentityMap::class
 		);

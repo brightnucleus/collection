@@ -29,6 +29,15 @@ class WPMetaQuerySQLExpressionVisitor extends WPQuerySQLExpressionVisitor {
 	];
 
 	/**
+	 * Instantiate a WPQuerySQLExpressionVisitor object.
+	 *
+	 * @param string $tableName Name of the table to generate SQL for.
+	 */
+	public function __construct( string $tableName ) {
+		$this->tableName = $tableName;
+	}
+
+	/**
 	 * Builds the left-hand-side of a where condition statement.
 	 *
 	 * @param string     $field

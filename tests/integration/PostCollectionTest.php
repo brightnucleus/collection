@@ -158,8 +158,6 @@ final class PostCollectionTest extends WP_UnitTestCase {
 		$matched_posts_a = $posts_a->matching( $criteria );
 		$matched_posts_b = $posts_b->matching( $criteria );
 
-		var_dump( $matched_posts_a[0] );
-		var_dump( $matched_posts_b[0] );
 		$this->assertSame( $matched_posts_a[0], $matched_posts_b[0] );
 		$this->assertSame( $matched_posts_a[1], $matched_posts_b[1] );
 	}
