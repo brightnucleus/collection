@@ -154,10 +154,16 @@ class WPQuerySQLExpressionVisitor extends ExpressionVisitor {
 			// TODO: This is simplified for now. We just use the value as-is
 			// when we don't detect a placeholder. We probably need to add
 			// conversion of values to make it work across types.
-			if ( ! is_string( $value )
+			if ( ! \is_string( $value )
 			     || ( $value !== '?' && strpos( $value, ':' ) !== 0 ) ) {
 				// TODO: Quote according to type.
-				$placeholder = "'$value'";
+				if ( \is_array( $value ) ) {
+					$placeholder = implode( ',', array_map( function ( $element ) {
+						return \is_numeric( $element ) ? "{$element}" : "'{$element}'";
+					}, $value ) );
+				} else {
+					$placeholder = "'{$value}'";
+				}
 			}
 
 			if ( null !== $comparison ) {

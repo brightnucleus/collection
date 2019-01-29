@@ -20,7 +20,11 @@ use WP_Post;
  * @package BrightNucleus\Collection
  * @author  Alain Schlesser <alain.schlesser@gmail.com>
  */
-abstract class PostTypeCollection extends AbstractWPQueryCollection {
+abstract class PostTypeCollection
+	extends AbstractWPQueryCollection
+	implements PropertyCacheAware {
+
+	use PropertyCaching;
 
 	/**
 	 * Assert that the element corresponds to the correct type for the

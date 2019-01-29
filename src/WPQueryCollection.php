@@ -17,15 +17,5 @@ namespace BrightNucleus\Collection;
  * @package BrightNucleus\Collection
  * @author  Alain Schlesser <alain.schlesser@gmail.com>
  */
-interface WPQueryCollection extends Collection {
-
-	/**
-	 * Selects all elements from a selectable that match the expression and
-	 * returns a new collection containing these elements.
-	 *
-	 * @param Criteria $criteria
-	 *
-	 * @return PostCollection
-	 */
-	public function matching( Criteria $criteria );
+interface WPQueryCollection extends Collection, Selectable {
 }

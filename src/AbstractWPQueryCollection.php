@@ -14,6 +14,7 @@ namespace BrightNucleus\Collection;
 use BrightNucleus\Exception\InvalidArgumentException;
 use BrightNucleus\Exception\RuntimeException;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Criteria;
 use stdClass;
 use WP_Post;
 use WP_Query;
@@ -24,12 +25,13 @@ use WP_Query;
  * @package BrightNucleus\Collection
  * @author  Alain Schlesser <alain.schlesser@gmail.com>
  */
-abstract class AbstractWPQueryCollection extends LazilyHydratedCollection implements WPQueryCollection {
+abstract class AbstractWPQueryCollection extends LazilyHydratedCollection implements WPQueryCollection, PropertyCacheAware {
 
 	use IdentityMapping;
+	use PropertyCaching;
 
 	/** @var IdentityMapPool */
-	protected static $identity_map_pool;
+	protected static $identityMapPool;
 
 	/**
 	 * Query to use for hydrating the collection.
@@ -93,12 +95,45 @@ abstract class AbstractWPQueryCollection extends LazilyHydratedCollection implem
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	public function count() {
+		global $wpdb;
+		if ( $this->query ) {
+			// TODO: Check whether this is even populated.
+			return $this->query->found_posts;
+		}
+
+		if ( ! $this->isHydrated ) {
+			// Do a separate query if we did not hydrate the collection yet,
+			// to avoid a potentially costly hydration.
+			$select_clause = 'SELECT COUNT(*)';
+
+			$query = implode( ' ', array_filter( [
+				$select_clause,
+				$this->getQueryGenerator()->getFromClause(),
+				$this->getQueryGenerator()->getWhereClause(),
+				$this->getQueryGenerator()->getOrderByClause(),
+				$this->getQueryGenerator()->getLimitClause(),
+			] ) );
+
+			$result = $wpdb->get_results( $query );
+
+			return (int) current(
+				array_column( $result, 'COUNT(*)' )
+			);
+		}
+
+		return parent::count();
+	}
+
+	/**
 	 * Selects all elements from a selectable that match the expression and
 	 * returns a new collection containing these elements.
 	 *
 	 * @param Criteria $criteria
 	 *
-	 * @return PostCollection
+	 * @return PostTypeCollection
 	 */
 	public function matching( Criteria $criteria ) {
 		if ( $this->query ) {
@@ -118,6 +153,15 @@ abstract class AbstractWPQueryCollection extends LazilyHydratedCollection implem
 		$collection->criteria = $collection->criteria->merge( $criteria );
 
 		return $collection;
+	}
+
+	/**
+	 * Get the current criteria of the selectable.
+	 *
+	 * @return Criteria Current criteria of the selectable.
+	 */
+	public function getCriteria(): Criteria {
+		return clone $this->criteria;
 	}
 
 	/**
@@ -142,6 +186,8 @@ abstract class AbstractWPQueryCollection extends LazilyHydratedCollection implem
 		if ( empty( $posts ) ) {
 			return;
 		}
+
+		$this->primePropertyCache( $posts );
 
 		foreach ( $posts as $post ) {
 			$post = $this->deduplicated(
@@ -242,11 +288,11 @@ abstract class AbstractWPQueryCollection extends LazilyHydratedCollection implem
 	 * @return IdentityMap Identity map to use.
 	 */
 	protected function createIdentityMap(): IdentityMap {
-		if ( null === static::$identity_map_pool ) {
-			static::$identity_map_pool = new IdentityMapPool();
+		if ( null === static::$identityMapPool ) {
+			static::$identityMapPool = new IdentityMapPool();
 		}
 
-		return static::$identity_map_pool->getIdentityMap(
+		return static::$identityMapPool->getIdentityMap(
 			$this->getIdentityMapType(),
 			GenericIdentityMap::class
 		);
@@ -259,6 +305,24 @@ abstract class AbstractWPQueryCollection extends LazilyHydratedCollection implem
 	 */
 	protected function getIdentityMapType(): string {
 		return get_class( $this );
+	}
+
+	/**
+	 * Prime the property cache for all posts in the collection.
+	 *
+	 * @return void
+	 */
+	protected function primePropertyCache( array $posts ): void {
+		if ( null !== $this->propertyCache ) {
+			return;
+		}
+
+		$ids = array_map(
+			function ( $element ) { return $this->deduceId( $element ); },
+			$posts
+		);
+
+		$this->propertyCache = new PostMetaPropertyCache( $ids );
 	}
 
 	/**
