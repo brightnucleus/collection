@@ -40,6 +40,9 @@ abstract class AbstractWPQueryCollection extends LazilyHydratedCollection implem
 	 */
 	protected $query;
 
+	/** @var int */
+	protected $countCache;
+
 	/**
 	 * Instantiate a AbstractWPQueryCollection object.
 	 *
@@ -85,12 +88,15 @@ abstract class AbstractWPQueryCollection extends LazilyHydratedCollection implem
 	 */
 	public function add( $element ) {
 		$element = $this->deduplicated(
-			$this->deduceId( $element ),
+			( new IdDeducer() )->deduceId( $element ),
 			function ( $id ) use ( $element ) {
 				return $this->normalizeEntity( $element );
 			}
 		);
 		$this->assertType( $element );
+
+		unset( $this->countCache );
+
 		return parent::add( $element );
 	}
 
@@ -105,6 +111,10 @@ abstract class AbstractWPQueryCollection extends LazilyHydratedCollection implem
 		}
 
 		if ( ! $this->isHydrated ) {
+			if ( isset( $this->countCache ) ) {
+				return $this->countCache;
+			}
+
 			// Do a separate query if we did not hydrate the collection yet,
 			// to avoid a potentially costly hydration.
 			$select_clause = 'SELECT COUNT(*)';
@@ -119,9 +129,11 @@ abstract class AbstractWPQueryCollection extends LazilyHydratedCollection implem
 
 			$result = $wpdb->get_results( $query );
 
-			return (int) current(
+			$this->countCache = (int) current(
 				array_column( $result, 'COUNT(*)' )
 			);
+
+			return $this->countCache;
 		}
 
 		return parent::count();
@@ -136,6 +148,8 @@ abstract class AbstractWPQueryCollection extends LazilyHydratedCollection implem
 	 * @return PostTypeCollection
 	 */
 	public function matching( Criteria $criteria ) {
+		unset( $this->countCache );
+
 		if ( $this->query ) {
 			// TODO: This should actually modify the WP_QUERY arguments.
 			$this->doHydrate();
@@ -189,9 +203,11 @@ abstract class AbstractWPQueryCollection extends LazilyHydratedCollection implem
 
 		$this->primePropertyCache( $posts );
 
+		$idDeducer = new IdDeducer();
+
 		foreach ( $posts as $post ) {
 			$post = $this->deduplicated(
-				$this->deduceId( $post ),
+				$idDeducer->deduceId( $post ),
 				function ( $id ) use ( $post ) {
 					return $this->normalizeEntity( $post );
 				}
@@ -220,66 +236,6 @@ abstract class AbstractWPQueryCollection extends LazilyHydratedCollection implem
 		}
 
 		return $entity;
-	}
-
-	/**
-	 * Deduce the ID of a given element.
-	 *
-	 * This is used for identity-mapping the elements to avoid handing out
-	 * conflicting references.
-	 *
-	 * @param mixed $element Element to deduce the ID for.
-	 * @return int|string ID that was detected.
-	 */
-	protected function deduceId( $element ) {
-		static $methods = [
-			'getId',
-			'get_id',
-			'ID',
-			'id',
-			'Id',
-		];
-
-		static $properties = [
-			'ID',
-			'id',
-			'Id',
-		];
-
-		if ( is_object( $element ) ) {
-			if ( $element instanceof Entity ) {
-				return $element->getId();
-			}
-
-			if ( $element instanceof WP_Post ) {
-				return $element->ID;
-			}
-
-			foreach ( $methods as $method ) {
-				if ( method_exists( $element, $method ) ) {
-					return $element->$method();
-				}
-			}
-
-			foreach ( $properties as $property ) {
-				if ( property_exists( $element, $property ) ) {
-					return $element->$property;
-				}
-			}
-		} elseif ( is_array( $element ) ) {
-			foreach ( $properties as $property ) {
-				if ( array_key_exists( $property, $element ) ) {
-					return $element[ $property ];
-				}
-			}
-		}
-
-		throw new RuntimeException( sprintf(
-			'Could not deduce ID for element of type "%s".',
-			is_object( $element )
-				? get_class( $element )
-				: gettype( $element )
-		) );
 	}
 
 	/**
@@ -317,8 +273,12 @@ abstract class AbstractWPQueryCollection extends LazilyHydratedCollection implem
 			return;
 		}
 
+		$idDeducer = new IdDeducer();
+
 		$ids = array_map(
-			function ( $element ) { return $this->deduceId( $element ); },
+			function ( $element ) use ( $idDeducer ) {
+				return $idDeducer->deduceId( $element );
+			},
 			$posts
 		);
 
