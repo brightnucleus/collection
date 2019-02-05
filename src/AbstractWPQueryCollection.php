@@ -115,17 +115,15 @@ abstract class AbstractWPQueryCollection extends LazilyHydratedCollection implem
 				return $this->countCache;
 			}
 
-			// Do a separate query if we did not hydrate the collection yet,
-			// to avoid a potentially costly hydration.
-			$select_clause = 'SELECT COUNT(*)';
-
-			$query = implode( ' ', array_filter( [
-				$select_clause,
+			$subQuery = implode( ' ', array_filter( [
+				$this->getQueryGenerator()->getSelectClause(),
 				$this->getQueryGenerator()->getFromClause(),
 				$this->getQueryGenerator()->getWhereClause(),
 				$this->getQueryGenerator()->getOrderByClause(),
 				$this->getQueryGenerator()->getLimitClause(),
 			] ) );
+
+			$query = "SELECT COUNT(*) FROM ({$subQuery}) as count;";
 
 			$result = $wpdb->get_results( $query );
 
