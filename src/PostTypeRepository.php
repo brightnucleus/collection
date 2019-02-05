@@ -62,7 +62,13 @@ abstract class PostTypeRepository extends WPQueryRepository {
 	protected function getDefaultCriteria(): Criteria {
 		return Criteria::create()
 		               ->where( Criteria::expr()->eq(
-			               'post_type', static::getPostType()
+			               'post_type',
+			               static::getPostType()
+		               ) )
+		               ->andWhere( Criteria::expr()->eq(
+			               'post_status',
+			               'publish'
+
 		               ) );
 	}
 }
