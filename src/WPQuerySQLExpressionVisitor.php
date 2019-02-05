@@ -138,6 +138,8 @@ class WPQuerySQLExpressionVisitor extends ExpressionVisitor {
 	 * @return string
 	 */
 	protected function getSelectConditionStatementSQL( $field, $value, $assoc = null, $comparison = null ) {
+		global $wpdb;
+
 		$selectedColumns = [];
 		$columns         = $this->getSelectConditionStatementColumnSQL(
 			$field,
@@ -162,7 +164,13 @@ class WPQuerySQLExpressionVisitor extends ExpressionVisitor {
 						return \is_numeric( $element ) ? "{$element}" : "'{$element}'";
 					}, $value ) );
 				} else {
-					$placeholder = "'{$value}'";
+					$placeholder = in_array( $comparison, [
+						Comparison::CONTAINS,
+						Comparison::STARTS_WITH,
+						Comparison::ENDS_WITH,
+					], true )
+						? $value
+						: "'{$value}'";
 				}
 			}
 
@@ -176,6 +184,27 @@ class WPQuerySQLExpressionVisitor extends ExpressionVisitor {
 
 				if ( $comparison === Comparison::NEQ && null === $value ) {
 					$selectedColumns[] = $column . ' IS NOT NULL';
+
+					continue;
+				}
+
+				if ( $comparison === Comparison::CONTAINS ) {
+					$likeTerm = $wpdb->esc_like( $placeholder );
+					$selectedColumns[] = $column . " LIKE '%{$likeTerm}%'";
+
+					continue;
+				}
+
+				if ( $comparison === Comparison::STARTS_WITH ) {
+					$likeTerm = $wpdb->esc_like( $placeholder );
+					$selectedColumns[] = $column . " LIKE '{$likeTerm}%'";
+
+					continue;
+				}
+
+				if ( $comparison === Comparison::ENDS_WITH ) {
+					$likeTerm = $wpdb->esc_like( $placeholder );
+					$selectedColumns[] = $column . " LIKE '%{$likeTerm}'";
 
 					continue;
 				}
