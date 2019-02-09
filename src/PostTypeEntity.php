@@ -11,6 +11,8 @@
 
 namespace BrightNucleus\Collection;
 
+use WP_Post;
+
 interface PostTypeEntity extends Entity {
 
 	/**
