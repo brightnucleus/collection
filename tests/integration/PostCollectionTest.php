@@ -161,4 +161,42 @@ final class PostCollectionTest extends WP_UnitTestCase {
 		$this->assertSame( $matched_posts_a[0], $matched_posts_b[0] );
 		$this->assertSame( $matched_posts_a[1], $matched_posts_b[1] );
 	}
+
+	public function test_it_keeps_collections_immutable() {
+		$factory = new WP_UnitTest_Factory();
+		$post_a  = $factory->post->create_and_get();
+		$post_b  = $factory->post->create_and_get();
+		$post_c  = $factory->post->create_and_get();
+		$post_d  = $factory->post->create_and_get();
+
+		$posts = new PostCollection( [
+			$post_a,
+			$post_b,
+			$post_c,
+			$post_d,
+		] );
+
+		$expr       = Criteria::expr();
+		$criteria_1 = Criteria::create()
+		                      ->where( $expr->eq( 'ID', $post_a->ID ) )
+		                      ->orWhere( $expr->eq( 'ID', $post_b->ID ) );
+		$criteria_2 = Criteria::create()
+		                      ->where( $expr->eq( 'ID', $post_c->ID ) )
+		                      ->orWhere( $expr->eq( 'ID', $post_d->ID ) );
+
+		$matched_posts_1 = $posts->matching( $criteria_1 );
+		$matched_posts_2 = $posts->matching( $criteria_2 );
+
+		$this->assertCount( 2, $matched_posts_1 );
+		$this->assertInstanceOf( WP_Post::class, $matched_posts_1->first() );
+		$this->assertEquals( $post_a->ID, $matched_posts_1->first()->ID );
+		$this->assertInstanceOf( WP_Post::class, $matched_posts_1->last() );
+		$this->assertEquals( $post_b->ID, $matched_posts_1->last()->ID );
+
+		$this->assertCount( 2, $matched_posts_2 );
+		$this->assertInstanceOf( WP_Post::class, $matched_posts_2->first() );
+		$this->assertEquals( $post_c->ID, $matched_posts_2->first()->ID );
+		$this->assertInstanceOf( WP_Post::class, $matched_posts_2->last() );
+		$this->assertEquals( $post_d->ID, $matched_posts_2->last()->ID );
+	}
 }
