@@ -11,6 +11,8 @@
 
 namespace BrightNucleus\Collection;
 
+use BrightNucleus\Exception\InvalidArgumentException;
+use BrightNucleus\Exception\RuntimeException;
 use WP_Post;
 
 /**
@@ -70,5 +72,65 @@ abstract class PostTypeRepository extends WPQueryRepository {
 			               'publish'
 
 		               ) );
+	}
+
+	/**
+	 * Persist an entity.
+	 *
+	 * @param WP_Post $entity Entity to persist.
+	 * @return WP_Post Persisted entity.
+	 * @throws Exception If the entity could not be persisted.
+	 */
+	public function persist( $entity ) {
+		$collection = static::getCollectionClass();
+		$collection::assertType( $entity );
+
+		$result = wp_update_post( $this->get_post_data( $entity ), true );
+
+		if ( is_wp_error( $result ) ) {
+			throw new RuntimeException(
+				"Could not persist entity with ID '{$entity->getId()}'. "
+				. "Reason: {$result->get_error_message()}"
+			);
+		}
+
+		$postmeta_data = $this->get_postmeta_data( $entity );
+
+		foreach ( $postmeta_data as $meta_key => $meta_value ) {
+			update_post_meta( $result, $meta_key, $meta_value, true );
+		}
+
+		return $this->find( $result );
+	}
+
+	/**
+	 * Get the Post data to persist a given entity.
+	 *
+	 * @param Entity $entity Entity to retrieve the Post data for.
+	 * @return array Associative array of post data.
+	 */
+	protected function get_post_data( $entity ) {
+		if ( $entity instanceof WP_Post ) {
+			return (array) $entity;
+		}
+
+		if ( is_subclass_of( $collection, PostTypeEntity::class ) ) {
+			/** @var PostTypeEntity $entity */
+			return (array) $entity->get_post_object();
+		}
+
+		throw new RuntimeException(
+			"Could not retrieve internal Post data to persist the entity with ID '{$entity->getId()}."
+		);
+	}
+
+	/**
+	 * Get the Post metadata to persist a given entity.
+	 *
+	 * @param Entity $entity Entity to retrieve the Post metadata for.
+	 * @return array Associative array of post metadata.
+	 */
+	protected function get_postmeta_data( $entity ) {
+		return [];
 	}
 }

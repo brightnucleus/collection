@@ -11,15 +11,12 @@
 
 namespace BrightNucleus\Collection;
 
-interface HasEntityWrapper {
+interface PostTypeEntity extends Entity {
 
 	/**
-	 * Get the class to be used to wrap entities.
+	 * Get the internal post object that the listing is based on.
 	 *
-	 * The wrapper class will need to accept a WP_Post object in its
-	 * constructor.
-	 *
-	 * @return string
+	 * @return WP_Post Internal post object.
 	 */
-	public static function getEntityWrapperClass(): string;
+	public function get_post_object(): WP_Post;
 }

@@ -35,6 +35,7 @@ interface Repository {
 	 * @return mixed
 	 */
 	public function findBy( Criteria $criteria );
+
 	/**
 	 * Find a single element that fits a given set of criteria.
 	 *
@@ -42,4 +43,13 @@ interface Repository {
 	 * @return mixed
 	 */
 	public function findOneBy( Criteria $criteria );
+
+	/**
+	 * Persist an entity.
+	 *
+	 * @param Entity $entity Entity to persist.
+	 * @return Entity Persisted entity.
+	 * @throws Exception If the entity could not be persisted.
+	 */
+	public function persist( $entity );
 }

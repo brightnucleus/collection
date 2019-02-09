@@ -93,7 +93,8 @@ abstract class AbstractWPQueryCollection extends LazilyHydratedCollection implem
 				return $this->normalizeEntity( $element );
 			}
 		);
-		$this->assertType( $element );
+
+		static::assertType( $element );
 
 		unset( $this->countCache );
 
@@ -210,7 +211,7 @@ abstract class AbstractWPQueryCollection extends LazilyHydratedCollection implem
 					return $this->normalizeEntity( $post );
 				}
 			);
-			$this->assertType( $post );
+			static::assertType( $post );
 			$this->collection->add( $post );
 		}
 	}
@@ -291,7 +292,7 @@ abstract class AbstractWPQueryCollection extends LazilyHydratedCollection implem
 	 *
 	 * @throws InvalidArgumentException If the type didn't match.
 	 */
-	abstract protected function assertType( $element ): void;
+	abstract public static function assertType( $element ): void;
 
 	/**
 	 * Get the query generator to use.

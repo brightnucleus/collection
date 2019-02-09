@@ -34,13 +34,13 @@ abstract class PostTypeCollection
 	 *
 	 * @throws InvalidArgumentException If the type didn't match.
 	 */
-	protected function assertType( $element ): void {
+	public static function assertType( $element ): void {
 		if ( $element instanceof WP_Post && $element->post_type === static::getPostType() ) {
 			return;
 		}
 
-		if ( $this instanceof HasEntityWrapper ) {
-			$wrapper = $this->getEntityWrapperClass();
+		if ( is_subclass_of( static::class, HasEntityWrapper::class ) ) {
+			$wrapper = static::getEntityWrapperClass();
 			if ( $element instanceof $wrapper ) {
 				return;
 			}
@@ -49,7 +49,7 @@ abstract class PostTypeCollection
 		$message = sprintf(
 			"Invalid type of element, WP_Post object of type '%s'%s required, got %s.",
 			static::getPostType(),
-			$this instanceof HasEntityWrapper ? " or {$this->getEntityWrapperClass()} object" : '',
+			is_subclass_of( static::class, HasEntityWrapper::class ) ? " or {$wrapper} object" : '',
 			$element instanceof WP_Post
 				? "WP_Post object of type {$element->post_type}"
 				: ( is_object( $element ) ? get_class( $element ) : gettype( $element ) )
