@@ -105,10 +105,10 @@ final class PostCollectionTest extends WP_UnitTestCase {
 		$matched_posts = $posts->matching( $criteria );
 
 		$this->assertCount( 2, $matched_posts );
-		$this->assertInstanceOf( WP_Post::class, $matched_posts[0] );
-		$this->assertEquals( $post_b->ID, $matched_posts[0]->ID );
-		$this->assertInstanceOf( WP_Post::class, $matched_posts[1] );
-		$this->assertEquals( $post_c->ID, $matched_posts[1]->ID );
+		$this->assertInstanceOf( WP_Post::class, $matched_posts->first() );
+		$this->assertEquals( $post_b->ID, $matched_posts->first()->ID );
+		$this->assertInstanceOf( WP_Post::class, $matched_posts->last() );
+		$this->assertEquals( $post_c->ID, $matched_posts->last()->ID );
 	}
 
 	public function test_it_can_match_on_wp_query() {
@@ -134,10 +134,10 @@ final class PostCollectionTest extends WP_UnitTestCase {
 		$matched_posts = $posts->matching( $criteria );
 
 		$this->assertCount( 2, $matched_posts );
-		$this->assertInstanceOf( WP_Post::class, $matched_posts[0] );
-		$this->assertEquals( $post_b->ID, $matched_posts[0]->ID );
-		$this->assertInstanceOf( WP_Post::class, $matched_posts[1] );
-		$this->assertEquals( $post_c->ID, $matched_posts[1]->ID );
+		$this->assertInstanceOf( WP_Post::class, $matched_posts->first() );
+		$this->assertEquals( $post_b->ID, $matched_posts->first()->ID );
+		$this->assertInstanceOf( WP_Post::class, $matched_posts->last() );
+		$this->assertEquals( $post_c->ID, $matched_posts->last()->ID );
 	}
 
 	public function test_it_returns_same_references_for_same_ids() {

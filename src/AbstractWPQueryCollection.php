@@ -146,23 +146,21 @@ abstract class AbstractWPQueryCollection extends LazilyHydratedCollection implem
 	 * @return PostTypeCollection
 	 */
 	public function matching( Criteria $criteria ) {
-		unset( $this->countCache );
-
-		if ( $this->query ) {
-			// TODO: This should actually modify the WP_QUERY arguments.
-			$this->doHydrate();
-			$this->isHydrated = true;
-		}
-
-		if ( $this->isHydrated ) {
-			$this->collection = new static( $this->collection->matching( $criteria ) );
-			$this->criteria   = $criteria;
-			$this->isHydrated = true;
-		}
-
 		$collection = clone $this;
 
+		unset( $collection->countCache );
+
+		if ( $collection->query ) {
+			// TODO: This should actually modify the WP_QUERY arguments.
+			$collection->doHydrate();
+			$collection->isHydrated = true;
+		}
+
 		$collection->criteria = $collection->criteria->merge( $criteria );
+
+		if ( $collection->isHydrated ) {
+			$collection->collection = $collection->collection->matching( $criteria );
+		}
 
 		return $collection;
 	}
@@ -194,6 +192,8 @@ abstract class AbstractWPQueryCollection extends LazilyHydratedCollection implem
 
 			$posts = $wpdb->get_results( $query );
 		}
+
+		$this->query = false;
 
 		if ( empty( $posts ) ) {
 			return;

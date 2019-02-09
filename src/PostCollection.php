@@ -11,6 +11,7 @@
 
 namespace BrightNucleus\Collection;
 
+use Doctrine\Common\Collections\Criteria;
 use WP_Post;
 
 /**
