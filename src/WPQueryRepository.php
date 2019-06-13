@@ -37,7 +37,14 @@ abstract class WPQueryRepository implements Repository {
 	 * @return mixed
 	 */
 	public function find( $id ) {
-		$class    = static::getCollectionClass();
+		$class = static::getCollectionClass();
+
+		if ( 0 === $id && is_a( $class, HasEntityWrapper::class, true ) ) {
+			/** @var HasEntityWrapper $class */
+			$entity = $class::getEntityWrapperClass();
+			return new $entity;
+		}
+
 		$criteria = ( clone $this->getDefaultCriteria() )
 			->where( Criteria::expr()->eq( 'ID', $id ) )
 			->setFirstResult( 0 )
