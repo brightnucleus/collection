@@ -12,6 +12,6 @@ if ( ! file_exists( $_tests_dir . '/includes/functions.php' ) ) {
 }
 
 if ( class_exists( 'PHPUnit\Runner\Version' ) ) {
-	require_once $_tests_dir . '/includes/phpunit6-compat.php';
+	require_once $_tests_dir . '/includes/phpunit6/compat.php';
 }
 require_once $_tests_dir . '/includes/testcase.php';

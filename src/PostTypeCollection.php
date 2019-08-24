@@ -12,6 +12,7 @@
 namespace BrightNucleus\Collection;
 
 use BrightNucleus\Exception\InvalidArgumentException;
+use BrightNucleus\Exception\RuntimeException;
 use WP_Post;
 
 /**
@@ -22,9 +23,12 @@ use WP_Post;
  */
 abstract class PostTypeCollection
 	extends AbstractWPQueryCollection
-	implements PropertyCacheAware {
+	implements PropertyCacheAware, Scopeable {
 
 	use PropertyCaching;
+
+	/** @var Scope */
+	protected $scope;
 
 	/**
 	 * Assert that the element corresponds to the correct type for the
@@ -65,6 +69,69 @@ abstract class PostTypeCollection
 	 */
 	protected function getQueryGenerator(): QueryGenerator {
 		return new PostTypeQueryGenerator( $this->criteria );
+	}
+
+	/**
+	 * Get the current criteria of the Scopeable.
+	 *
+	 * @return Scope Current scope of the Scopeable.
+	 */
+	public function getScope(): Scope {
+		return $this->scope;
+	}
+
+	/**
+	 * Use a specific scope for the current Scopeable.
+	 *
+	 * If the Scopeable already has a Scope of the same type, it will be
+	 * replaced.
+	 *
+	 * @param Scope $scope Scope to use.
+	 * @return PostTypeCollection
+	 */
+	public function withScope( Scope $scope ) {
+		if ( ! $scope instanceof Status ) {
+			throw new RuntimeException(
+				sprintf(
+					'Invalid Scope type "%1$s" for Collection of type "%2$s"',
+					get_class( $scope ),
+					get_class( $this )
+				)
+			);
+		}
+
+		$newCollection = clone $this;
+
+		$newCollection->scope = $scope;
+
+		return $newCollection;
+	}
+
+	/**
+	 * Add a specific scope for the current Scopeable.
+	 *
+	 * If the Scopeable already has a Scope of the same type, it will be
+	 * extended instead of replaced.
+	 *
+	 * @param Scope $scope Scope to add.
+	 * @return PostTypeCollection
+	 */
+	public function addScope( Scope $scope ) {
+		if ( ! $scope instanceof Status ) {
+			throw new RuntimeException(
+				sprintf(
+					'Invalid Scope type "%1$s" for Collection of type "%2$s"',
+					get_class( $scope ),
+					get_class( $this )
+				)
+			);
+		}
+
+		$newCollection = clone $this;
+
+		$newCollection->scope = $newCollection->scope->mergeWith( $scope );
+
+		return $newCollection;
 	}
 
 	/**
