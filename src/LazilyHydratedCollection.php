@@ -11,6 +11,7 @@
 
 namespace BrightNucleus\Collection;
 
+use BrightNucleus\Exception\RuntimeException;
 use Closure;
 use Doctrine\Common\Collections\ArrayCollection;
 
@@ -152,7 +153,11 @@ abstract class LazilyHydratedCollection implements Collection {
 	 */
 	public function first() {
 		$this->hydrate();
-		return $this->collection->first();
+		$element = $this->collection->first();
+		if ( false === $element ) {
+			throw new RuntimeException( 'Cannot retrieve the first element of an empty collection.' );
+		}
+		return $element;
 	}
 
 	/**
@@ -160,7 +165,11 @@ abstract class LazilyHydratedCollection implements Collection {
 	 */
 	public function last() {
 		$this->hydrate();
-		return $this->collection->last();
+		$element = $this->collection->last();
+		if ( false === $element ) {
+			throw new RuntimeException( 'Cannot retrieve the last element of an empty collection.' );
+		}
+		return $element;
 	}
 
 	/**
@@ -168,7 +177,11 @@ abstract class LazilyHydratedCollection implements Collection {
 	 */
 	public function key() {
 		$this->hydrate();
-		return $this->collection->key();
+		$element = $this->collection->key();
+		if ( false === $element ) {
+			throw new RuntimeException( 'Cannot retrieve the current key of an empty collection.' );
+		}
+		return $element;
 	}
 
 	/**
@@ -176,7 +189,11 @@ abstract class LazilyHydratedCollection implements Collection {
 	 */
 	public function current() {
 		$this->hydrate();
-		return $this->collection->current();
+		$element = $this->collection->current();
+		if ( false === $element ) {
+			throw new RuntimeException( 'Cannot retrieve the current element of an empty collection.' );
+		}
+		return $element;
 	}
 
 	/**
@@ -184,7 +201,11 @@ abstract class LazilyHydratedCollection implements Collection {
 	 */
 	public function next() {
 		$this->hydrate();
-		return $this->collection->next();
+		$element = $this->collection->next();
+		if ( false === $element ) {
+			throw new RuntimeException( 'Cannot retrieve the next element of an empty collection.' );
+		}
+		return $element;
 	}
 
 	/**

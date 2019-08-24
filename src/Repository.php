@@ -11,6 +11,8 @@
 
 namespace BrightNucleus\Collection;
 
+use Exception;
+
 interface Repository {
 
 	/**

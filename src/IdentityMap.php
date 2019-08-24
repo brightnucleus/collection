@@ -27,4 +27,11 @@ interface IdentityMap {
 	 * @param mixed      $entity Entity to store in the identity map.
 	 */
 	public function put( $id, $entity ): void;
+
+	/**
+	 * Drop an entity from the identity map given an ID.
+	 *
+	 * @param int|string $id ID of the entity to drop.
+	 */
+	public function drop( $id ): void;
 }

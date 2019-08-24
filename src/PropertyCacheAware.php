@@ -16,9 +16,9 @@ interface PropertyCacheAware {
 	/**
 	 * Get the property cache instance in use.
 	 *
-	 * @return PropertyCache Property cache instance.
+	 * @return ?PropertyCache Property cache instance.
 	 */
-	public function getPropertyCache(): PropertyCache;
+	public function getPropertyCache(): ?PropertyCache;
 
 	/**
 	 * Configure the object to use a specific property cache instance.

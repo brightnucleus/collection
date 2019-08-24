@@ -48,10 +48,14 @@ class WPMetaQuerySQLExpressionVisitor extends WPQuerySQLExpressionVisitor {
 	protected function getSelectConditionStatementColumnSQL( $field, $assoc = null ) {
 		global $wpdb;
 
-		if ( array_key_exists( $field, static::FIELD_MAP ) ) {
+		if ( $field instanceof Column ) {
+			return [ "{$field->getTableName()}.{$field->getColumnName()}" ];
+		}
+
+		if ( is_string( $field ) && array_key_exists( $field, static::FIELD_MAP ) ) {
 			$field = static::FIELD_MAP[ $field ];
 		}
 
-		return [ "{$wpdb->get_blog_prefix()}{$this->tableName}.{$field}" ];
+		return [ "{$this->tableName}.{$field}" ];
 	}
 }

@@ -11,7 +11,11 @@
 
 namespace BrightNucleus\Collection;
 
+use Doctrine\Common\Collections\Expr\Comparison;
+use Doctrine\Common\Collections\Expr\CompositeExpression;
+use Doctrine\Common\Collections\Expr\Expression;
 use Doctrine\Common\Collections\Expr\ExpressionVisitor;
+use Doctrine\Common\Collections\Expr\Value;
 
 abstract class WPQueryGenerator implements QueryGenerator {
 
@@ -48,8 +52,8 @@ abstract class WPQueryGenerator implements QueryGenerator {
 	 * @return string SELECT clause.
 	 */
 	public function getSelectClause(): string {
-		$fields = [ '*' ];
-		return 'SELECT ' . implode( ',', $fields );
+		$fields = [ "{$this->getTableName()}.*" ];
+		return 'SELECT DISTINCT ' . implode( ',', $fields );
 	}
 
 	/**
@@ -59,8 +63,22 @@ abstract class WPQueryGenerator implements QueryGenerator {
 	 */
 	public function getFromClause(): string {
 		global $wpdb;
-		$from = $wpdb->get_blog_prefix() . $this->getTableName();
-		return "FROM {$from}";
+
+		$from = [];
+
+		$from[] = "{$wpdb->get_blog_prefix()}{$this->getTableName()} {$this->getTableName()}";
+
+		if ( $this->uses_postmeta() ) {
+			$from[] = "{$wpdb->get_blog_prefix()}postmeta postmeta";
+		}
+
+		if ( $this->uses_taxonomies() ) {
+			$from[] = "{$wpdb->get_blog_prefix()}term_relationships term_relationships";
+			$from[] = "{$wpdb->get_blog_prefix()}term_taxonomy term_taxonomy";
+			$from[] = "{$wpdb->get_blog_prefix()}terms terms";
+		}
+
+		return 'FROM ' . implode( ', ', array_unique( $from ) );
 	}
 
 	/**
@@ -71,17 +89,29 @@ abstract class WPQueryGenerator implements QueryGenerator {
 	 * @return string WHERE clause.
 	 */
 	public function getWhereClause(): string {
-		if ( $this->criteria instanceof NullCriteria ) {
+		$criteria = clone $this->criteria;
+
+		if ( $this->uses_postmeta() && $this->getTableName() !== 'postmeta' ) {
+			$criteria->andWhere(
+				Criteria::expr()->eq(
+					new Column( Table::POSTMETA, 'post_id' ),
+					new Column( Table::POSTS, 'ID' )
+				)
+			);
+		}
+
+		if ( $criteria instanceof NullCriteria ) {
 			return '';
 		}
 
-		$expression = $this->criteria->getWhereExpression();
+		$expression = $criteria->getWhereExpression();
 
 		if ( null === $expression ) {
 			return '';
 		}
 
 		$visitor = $this->getVisitor();
+
 		return 'WHERE ' . $visitor->dispatch( $expression );
 	}
 
@@ -101,6 +131,7 @@ abstract class WPQueryGenerator implements QueryGenerator {
 
 		$strings = [];
 		foreach ( $orderings as $field => $order ) {
+
 			$strings [] = "{$field} {$order}";
 		}
 
@@ -139,7 +170,81 @@ abstract class WPQueryGenerator implements QueryGenerator {
 	}
 
 	/**
-	 * Get the name of the table to query against.
+	 * Check the criteria to see whether the query uses postmeta.
+	 *
+	 * @return bool Whether the query uses postmeta.
+	 */
+	protected function uses_postmeta(): bool {
+		return $this->criteria_contains_table( Table::POSTMETA );
+	}
+
+	/**
+	 * Check the criteria to see whether the query uses taxonomies.
+	 *
+	 * @return bool Whether the query uses taxonomies.
+	 */
+	protected function uses_taxonomies(): bool {
+		return $this->criteria_contains_table( Table::TERM_TAXONOMY );
+	}
+
+	protected function criteria_contains_table( string $table_name ) {
+		foreach ( $this->criteria->getOrderings() as $column => $direction ) {
+			if ( 0 === stripos( $column, "{$table_name}." ) ) {
+				return true;
+			}
+		}
+
+		return $this->expression_contains_table(
+			$this->criteria->getWhereExpression(),
+			$table_name
+		);
+	}
+
+	protected function expression_contains_table(
+		Expression $expression,
+		string $table_name
+	) {
+		if ( $expression instanceof Comparison ) {
+			foreach (
+				[
+					$expression->getField(),
+					$expression->getValue()->getValue(),
+				] as $column
+			) {
+				if ( is_string( $column )
+				     && 0 === stripos( $column, "{$table_name}." ) ) {
+					return true;
+				}
+
+				if ( $column instanceof Column && $table_name === $column->getTableName() ) {
+					return true;
+				}
+			}
+		} else if ( $expression instanceof Value ) {
+			$value = $expression->getValue();
+			if ( is_string( $value )
+			     && 0 === stripos( $value, "{$table_name}." ) ) {
+				return true;
+			}
+
+			if ( $value instanceof Column
+			     && $table_name === $value->getTableName() ) {
+				return true;
+			}
+		} else if ( $expression instanceof CompositeExpression ) {
+			foreach ( $expression->getExpressionList() as $nested_expression ) {
+				if ( $this->expression_contains_table( $nested_expression,
+					$table_name ) ) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Get the name of the main table to query against.
 	 *
 	 * @return string Name of the table to query against.
 	 */

@@ -23,6 +23,8 @@ class IdentityMapPool {
 		$identityMap                 = new $implementation();
 		$this->identityMaps[ $type ] = $identityMap;
 
+		add_action( 'clean_post_cache', [ $this->identityMaps[ $type ], 'drop' ] );
+
 		return $identityMap;
 	}
 }

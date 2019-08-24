@@ -86,7 +86,12 @@ final class PostMetaPropertyCache implements PropertyCache {
 			$this->hydrate( [ $id ] );
 		}
 
-		return $this->properties[ $id ];
+		if ( array_key_exists( $id, $this->properties )
+		     && null !== $this->properties[ $id ] ) {
+			return $this->properties[ $id ];
+		};
+
+		return new PostMetaPropertyCollection( $id );
 	}
 
 	/**
@@ -98,7 +103,7 @@ final class PostMetaPropertyCache implements PropertyCache {
 		global $wpdb;
 		$expr     = Criteria::expr();
 		$criteria = Criteria::create()
-		                    ->where( $expr->in( 'post_id', $ids ) );
+		                    ->where( $expr->in( new Column( Table::POSTMETA, 'post_id' ), $ids ) );
 
 		$query = ( new PostMetaQueryGenerator( $criteria ) )->getQuery();
 

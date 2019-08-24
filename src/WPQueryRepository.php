@@ -52,7 +52,7 @@ abstract class WPQueryRepository implements Repository {
 
 		/** @var Collection $collection */
 		$collection = new $class( $criteria );
-		if ( empty( $collection ) ) {
+		if ( $collection->isEmpty() ) {
 			throw new RuntimeException( "Element with ID {$id} was not found." );
 		}
 

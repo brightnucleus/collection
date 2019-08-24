@@ -170,7 +170,9 @@ class WPQuerySQLExpressionVisitor extends ExpressionVisitor {
 						Comparison::ENDS_WITH,
 					], true )
 						? $value
-						: "'{$value}'";
+						: ( is_object( $value )
+							? (string) $value
+							: "'{$value}'" );
 				}
 			}
 
@@ -256,8 +258,6 @@ class WPQuerySQLExpressionVisitor extends ExpressionVisitor {
 	 * @return string[]
 	 */
 	protected function getSelectConditionStatementColumnSQL( $field, $assoc = null ) {
-		global $wpdb;
-
-		return [ "{$wpdb->get_blog_prefix()}{$this->tableName}.{$field}" ];
+		return [ $field ];
 	}
 }

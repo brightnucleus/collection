@@ -37,4 +37,13 @@ final class GenericIdentityMap implements IdentityMap {
 	public function put( $id, $entity ): void {
 		$this->map[ $id ] = $entity;
 	}
+
+	/**
+	 * Drop an entity from the identity map given an ID.
+	 *
+	 * @param int|string $id ID of the entity to drop.
+	 */
+	public function drop( $id ): void {
+		unset( $this->map[ $id ] );
+	}
 }
