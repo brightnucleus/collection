@@ -45,7 +45,13 @@ abstract class WPQueryRepository implements Repository {
 			return new $entity;
 		}
 
-		$criteria = ( clone $this->getDefaultCriteria() )
+		$criteria = clone $this->getDefaultCriteria();
+
+		if ( $this instanceof Scopeable ) {
+			$criteria = $criteria->merge( $this->getScope()->getCriteria() );
+		}
+
+		$criteria = $criteria
 			->where( Criteria::expr()->eq( 'ID', $id ) )
 			->setFirstResult( 0 )
 			->setMaxResults( 1 );
@@ -66,13 +72,21 @@ abstract class WPQueryRepository implements Repository {
 	 * @return WPQueryCollection
 	 */
 	public function findBy( Criteria $criteria ) {
-		$class    = static::getCollectionClass();
-		$criteria = ( clone $this->getFallbackCriteria() )
-			->merge( clone $this->getDefaultCriteria() )
+		$class          = static::getCollectionClass();
+		$mergedCriteria = ( clone $this->getFallbackCriteria() )
+			->merge( clone $this->getDefaultCriteria() );
+
+		if ( $this instanceof Scopeable ) {
+			$mergedCriteria = $mergedCriteria->merge(
+				$this->getScope()->getCriteria()
+			);
+		}
+
+		$mergedCriteria = $mergedCriteria
 			->setMaxResults( PHP_INT_MAX )
 			->merge( $criteria );
 
-		return new $class( $criteria );
+		return new $class( $mergedCriteria );
 	}
 
 	/**

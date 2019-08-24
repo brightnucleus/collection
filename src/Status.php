@@ -45,7 +45,7 @@ class Status implements Scope {
 	 * @param mixed ...$scope Value(s) to use for the Scope.
 	 */
 	public function __construct( ...$scope ) {
-		$this->addValues( $scope );
+		$this->addValues( ...$scope );
 	}
 
 	/**
@@ -57,7 +57,7 @@ class Status implements Scope {
 	public function add( ...$scope ): Scope {
 		$newScope = clone $this;
 
-		$newScope->addValues( $scope );
+		$newScope->addValues( ...$scope );
 
 		return $newScope;
 	}

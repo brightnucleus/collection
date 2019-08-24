@@ -26,6 +26,28 @@ class Criteria extends DoctrineCommonCriteria {
 	}
 
 	/**
+	 * Create a new Criteria object from a Doctrine criteria.
+	 *
+	 * @param DoctrineCommonCriteria $criteria Criteria to create the new
+	 *                                         object from.
+	 * @return Criteria New Criteria object.
+	 */
+	public static function from( DoctrineCommonCriteria $criteria ): Criteria {
+		$newCriteria = static::create()
+		                     ->orderBy( $criteria->getOrderings() )
+		                     ->setFirstResult( $criteria->getFirstResult() )
+		                     ->setMaxResults( $criteria->getMaxResults() );
+
+		$expression = $criteria->getWhereExpression();
+
+		if ( $expression !== null ) {
+			$newCriteria = $newCriteria->where( $expression );
+		}
+
+		return $newCriteria;
+	}
+
+	/**
 	 * Sets the where expression to evaluate when this Criteria is searched for.
 	 *
 	 * @param Expression $expression
@@ -101,14 +123,14 @@ class Criteria extends DoctrineCommonCriteria {
 	/**
 	 * Merge two separate sets of criteria to create a composite construct.
 	 *
-	 * @param Criteria $that Second set of criteria to merge.
+	 * @param DoctrineCommonCriteria $that Second set of criteria to merge.
 	 * @return Criteria Resulting set of criteria.
 	 */
-	public function merge( Criteria $that ): Criteria {
+	public function merge( DoctrineCommonCriteria $that ): Criteria {
 		// Nothing to merge, just return non-null criteria.
 		// If both are NullCriteria, a NullCriteria will be returned.
 		if ( $this instanceof NullCriteria ) {
-			return clone $that;
+			return static::from( $that );
 		}
 		if ( $that instanceof NullCriteria ) {
 			return clone $this;

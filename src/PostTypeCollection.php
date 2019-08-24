@@ -77,6 +77,10 @@ abstract class PostTypeCollection
 	 * @return Scope Current scope of the Scopeable.
 	 */
 	public function getScope(): Scope {
+		if ( $this->scope === null ) {
+			$this->scope = new Status( Status::PUBLISH );
+		}
+
 		return $this->scope;
 	}
 
@@ -129,7 +133,11 @@ abstract class PostTypeCollection
 
 		$newCollection = clone $this;
 
-		$newCollection->scope = $newCollection->scope->mergeWith( $scope );
+		if ( $newCollection->scope === null ) {
+			$newCollection->scope = $scope;
+		} else {
+			$newCollection->scope = $newCollection->scope->mergeWith( $scope );
+		}
 
 		return $newCollection;
 	}

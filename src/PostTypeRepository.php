@@ -15,8 +15,8 @@ use BrightNucleus\Exception\RuntimeException;
 use RRHub\Directories\Services;
 use RRHub\Directories\Taxonomy\TaxonomyTerm;
 use RRHub\Directories\Taxonomy\TaxonomyTermCollection;
-use RRHub\Directories\Type\Status;
 use Exception;
+use Throwable;
 use WP_Post;
 
 /**
@@ -25,7 +25,12 @@ use WP_Post;
  * @package BrightNucleus\Collection
  * @author  Alain Schlesser <alain.schlesser@gmail.com>
  */
-abstract class PostTypeRepository extends WPQueryRepository {
+abstract class PostTypeRepository
+	extends WPQueryRepository
+	implements Scopeable {
+
+	/** @var Scope */
+	protected $scope;
 
 	/**
 	 * Find a single element by its ID.
@@ -70,10 +75,6 @@ abstract class PostTypeRepository extends WPQueryRepository {
 		               ->where( Criteria::expr()->eq(
 			               new Column( Table::POSTS, 'post_type' ),
 			               static::getPostType()
-		               ) )
-		               ->andWhere( Criteria::expr()->eq(
-			               new Column( Table::POSTS, 'post_status' ),
-			               Status::PUBLISH
 		               ) );
 	}
 
@@ -548,6 +549,78 @@ abstract class PostTypeRepository extends WPQueryRepository {
 	 */
 	protected function filterCurrentTaxonomyTerms( array $taxonomy_terms ): array {
 		return $taxonomy_terms;
+	}
+
+
+	/**
+	 * Get the current criteria of the Scopeable.
+	 *
+	 * @return Scope Current scope of the Scopeable.
+	 */
+	public function getScope(): Scope {
+		if ( $this->scope === null ) {
+			$this->scope = new Status( Status::PUBLISH );
+		}
+
+		return $this->scope;
+	}
+
+	/**
+	 * Use a specific scope for the current Scopeable.
+	 *
+	 * If the Scopeable already has a Scope of the same type, it will be
+	 * replaced.
+	 *
+	 * @param Scope $scope Scope to use.
+	 * @return PostTypeRepository
+	 */
+	public function withScope( Scope $scope ) {
+		if ( ! $scope instanceof Status ) {
+			throw new RuntimeException(
+				sprintf(
+					'Invalid Scope type "%1$s" for Repository of type "%2$s"',
+					get_class( $scope ),
+					get_class( $this )
+				)
+			);
+		}
+
+		$newRepository = clone $this;
+
+		$newRepository->scope = $scope;
+
+		return $newRepository;
+	}
+
+	/**
+	 * Add a specific scope for the current Scopeable.
+	 *
+	 * If the Scopeable already has a Scope of the same type, it will be
+	 * extended instead of replaced.
+	 *
+	 * @param Scope $scope Scope to add.
+	 * @return PostTypeRepository
+	 */
+	public function addScope( Scope $scope ) {
+		if ( ! $scope instanceof Status ) {
+			throw new RuntimeException(
+				sprintf(
+					'Invalid Scope type "%1$s" for Repository of type "%2$s"',
+					get_class( $scope ),
+					get_class( $this )
+				)
+			);
+		}
+
+		$newRepository = clone $this;
+
+		if ( $newRepository->scope === null ) {
+			$newRepository->scope = $scope;
+		} else {
+			$newRepository->scope = $newRepository->scope->mergeWith( $scope );
+		}
+
+		return $newRepository;
 	}
 
 	/**
