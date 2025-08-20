@@ -52,7 +52,7 @@ abstract class AbstractWPQueryCollection extends LazilyHydratedCollection implem
 	 *                                                     map implementation
 	 *                                                     to use.
 	 */
-	public function __construct( $argument = null, IdentityMap $identityMap = null ) {
+	public function __construct( $argument = null, ?IdentityMap $identityMap = null ) {
 		if ( null === $identityMap ) {
 			$identityMap = $this->createIdentityMap();
 		}
@@ -86,7 +86,7 @@ abstract class AbstractWPQueryCollection extends LazilyHydratedCollection implem
 	/**
 	 * {@inheritDoc}
 	 */
-	public function add( $element ) {
+	public function add( $element ): bool {
 		$element = $this->deduplicated(
 			( new IdDeducer() )->deduceId( $element ),
 			function ( $id ) use ( $element ) {
@@ -104,7 +104,7 @@ abstract class AbstractWPQueryCollection extends LazilyHydratedCollection implem
 	/**
 	 * {@inheritDoc}
 	 */
-	public function count() {
+	public function count(): int {
 		global $wpdb;
 		if ( $this->query ) {
 			// TODO: Check whether this is even populated.

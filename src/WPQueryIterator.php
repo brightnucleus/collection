@@ -34,6 +34,7 @@ class WPQueryIterator implements Iterator {
 	 * @link  http://php.net/manual/en/iterator.current.php
 	 * @return mixed Can return any type.
 	 */
+	#[\ReturnTypeWillChange]
 	public function current() {
 		return $this->collection->current();
 	}
@@ -44,7 +45,7 @@ class WPQueryIterator implements Iterator {
 	 * @link  http://php.net/manual/en/iterator.next.php
 	 * @return void Any returned value is ignored.
 	 */
-	public function next() {
+	public function next(): void {
 		$this->collection->next();
 	}
 
@@ -54,6 +55,7 @@ class WPQueryIterator implements Iterator {
 	 * @link  http://php.net/manual/en/iterator.key.php
 	 * @return mixed scalar on success, or null on failure.
 	 */
+	#[\ReturnTypeWillChange]
 	public function key() {
 		return $this->collection->key();
 	}
@@ -65,9 +67,14 @@ class WPQueryIterator implements Iterator {
 	 * @return boolean The return value will be casted to boolean and then
 	 *     evaluated. Returns true on success or false on failure.
 	 */
-	public function valid() {
-		// TODO: parent collection does not seem to have a valid() method?
-		return $this->collection->valid();
+	public function valid(): bool {
+		// Check if the current element exists and is not false
+		try {
+			$current = $this->collection->current();
+			return $current !== false && $current !== null;
+		} catch (\Exception $e) {
+			return false;
+		}
 	}
 
 	/**
@@ -76,7 +83,7 @@ class WPQueryIterator implements Iterator {
 	 * @link  http://php.net/manual/en/iterator.rewind.php
 	 * @return void Any returned value is ignored.
 	 */
-	public function rewind() {
+	public function rewind(): void {
 		$this->collection->first();
 	}
 

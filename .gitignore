@@ -1,2 +1,15 @@
 /vendor/
 composer.lock
+
+# WordPress environment files
+.wp-env/
+.wp-env.override.json
+
+# PHPUnit cache files
+.phpunit.result.cache
+.phpunit.integration.cache
+.phpunit.cache/
+
+# Node modules (if wp-env is installed locally)
+node_modules/
+package-lock.json

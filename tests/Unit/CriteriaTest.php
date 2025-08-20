@@ -1,5 +1,7 @@
 <?php declare( strict_types=1 );
 
+namespace BrightNucleus\Collection\Tests\Unit;
+
 use BrightNucleus\Collection\Criteria;
 use BrightNucleus\Collection\NullCriteria;
 use Doctrine\Common\Collections\ExpressionBuilder;
@@ -7,6 +9,10 @@ use PHPUnit\Framework\TestCase;
 
 final class CriteriaTest extends TestCase {
 
+	/**
+	 * @covers \BrightNucleus\Collection\Criteria::merge
+	 * @covers \BrightNucleus\Collection\Criteria::from
+	 */
 	public function test_it_can_merge_null_criteria() {
 		$null_criteria     = new NullCriteria();
 		$regular_criteria  = new Criteria();
@@ -26,6 +32,10 @@ final class CriteriaTest extends TestCase {
 		$this->assertNotInstanceOf( NullCriteria::class, $merged_criteria_2 );
 	}
 
+	/**
+	 * @covers \BrightNucleus\Collection\Criteria::merge
+	 * @covers \BrightNucleus\Collection\Criteria::andWhere
+	 */
 	public function test_it_can_merge_expressions() {
 		$expression_builder  = new ExpressionBuilder();
 		$expression_a        = $expression_builder->eq(
@@ -59,6 +69,10 @@ final class CriteriaTest extends TestCase {
 		);
 	}
 
+	/**
+	 * @covers \BrightNucleus\Collection\Criteria::merge
+	 * @covers \BrightNucleus\Collection\Criteria::orderBy
+	 */
 	public function test_it_can_merge_orderings() {
 		$criteria_a = ( new Criteria() )
 			->orderBy( [ 'name' => Criteria::DESC ] );
@@ -73,6 +87,10 @@ final class CriteriaTest extends TestCase {
 		], $merged_criteria->getOrderings() );
 	}
 
+	/**
+	 * @covers \BrightNucleus\Collection\Criteria::merge
+	 * @covers \BrightNucleus\Collection\Criteria::orderBy
+	 */
 	public function test_it_uses_the_latest_orderings_for_conflicts() {
 		$criteria_a = ( new Criteria() )
 			->orderBy( [ 'name' => Criteria::DESC ] );
@@ -86,6 +104,10 @@ final class CriteriaTest extends TestCase {
 		], $merged_criteria->getOrderings() );
 	}
 
+	/**
+	 * @covers \BrightNucleus\Collection\Criteria::merge
+	 * @covers \BrightNucleus\Collection\Criteria::setFirstResult
+	 */
 	public function test_it_can_merge_first_result() {
 		$criteria_a = ( new Criteria() )
 			->setFirstResult( 42 );
@@ -98,7 +120,11 @@ final class CriteriaTest extends TestCase {
 		$this->assertEquals( 42, $merged_criteria_b->getFirstResult() );
 	}
 
-	public function test_it_overrides_frist_Result() {
+	/**
+	 * @covers \BrightNucleus\Collection\Criteria::merge
+	 * @covers \BrightNucleus\Collection\Criteria::setFirstResult
+	 */
+	public function test_it_overrides_first_result() {
 		$criteria_a = ( new Criteria() )
 			->setFirstResult( 42 );
 		$criteria_b = ( new Criteria() )
@@ -108,6 +134,10 @@ final class CriteriaTest extends TestCase {
 		$this->assertEquals( 7, $merged_criteria->getFirstResult() );
 	}
 
+	/**
+	 * @covers \BrightNucleus\Collection\Criteria::merge
+	 * @covers \BrightNucleus\Collection\Criteria::setMaxResults
+	 */
 	public function test_it_can_merge_max_results() {
 		$criteria_a = ( new Criteria() )
 			->setMaxResults( 42 );
@@ -120,6 +150,10 @@ final class CriteriaTest extends TestCase {
 		$this->assertEquals( 42, $merged_criteria_b->getMaxResults() );
 	}
 
+	/**
+	 * @covers \BrightNucleus\Collection\Criteria::merge
+	 * @covers \BrightNucleus\Collection\Criteria::setMaxResults
+	 */
 	public function test_it_overrides_max_results() {
 		$criteria_a = ( new Criteria() )
 			->setMaxResults( 42 );

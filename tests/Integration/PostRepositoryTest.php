@@ -1,7 +1,12 @@
 <?php declare( strict_types=1 );
 
+namespace BrightNucleus\Collection\Tests\Integration;
+
 use BrightNucleus\Collection\Criteria;
 use BrightNucleus\Collection\PostRepository;
+use WP_Post;
+use WP_UnitTest_Factory;
+use WP_UnitTestCase;
 
 final class PostRepositoryTest extends WP_UnitTestCase {
 

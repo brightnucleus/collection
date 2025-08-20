@@ -1,11 +1,16 @@
 <?php declare( strict_types=1 );
 
+namespace BrightNucleus\Collection\Tests\Integration;
+
 use BrightNucleus\Collection\Criteria;
 use BrightNucleus\Collection\NullCriteria;
 use BrightNucleus\Collection\PostCollection;
+use WP_Post;
+use WP_Query;
+use WP_UnitTest_Factory;
+use WP_UnitTestCase;
 
 final class PostCollectionTest extends WP_UnitTestCase {
-
 	public function test_it_can_be_instantiated() {
 		$posts = new PostCollection();
 

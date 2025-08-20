@@ -49,7 +49,7 @@ final class PostCollection extends PostTypeCollection {
 	/**
 	 * @return WP_Post[]
 	 */
-	public function getIterator() {
+	public function getIterator(): \Traversable {
 		// Override only used for setting the return type.
 		return parent::getIterator();
 	}

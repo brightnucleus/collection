@@ -1,0 +1,27 @@
+{
+    "phpVersion": "8.4",
+    "plugins": [],
+    "themes": [],
+    "config": {
+        "WP_DEBUG": true,
+        "WP_DEBUG_LOG": true,
+        "WP_DEBUG_DISPLAY": false,
+        "SCRIPT_DEBUG": true
+    },
+    "mappings": {
+        "wp-content/plugins/brightnucleus-collection": "."
+    },
+    "env": {
+        "tests": {
+            "config": {
+                "WP_DEBUG": true,
+                "WP_DEBUG_LOG": true,
+                "WP_DEBUG_DISPLAY": true,
+                "SCRIPT_DEBUG": true,
+                "WP_PHPUNIT__TESTS_CONFIG": "wp-tests-config.php"
+            },
+            "port": 8889,
+            "mysqlPort": 33069
+        }
+    }
+}

@@ -1,9 +1,13 @@
 <?php declare( strict_types=1 );
 
+namespace BrightNucleus\Collection\Tests\Integration;
+
 use BrightNucleus\Collection\Criteria;
 use BrightNucleus\Collection\NullCriteria;
 use BrightNucleus\Collection\PostMetaPropertyCollection;
 use BrightNucleus\Collection\Property;
+use WP_UnitTest_Factory;
+use WP_UnitTestCase;
 
 final class PostMetaPropertyCollectionTest extends WP_UnitTestCase {
 
@@ -26,10 +30,10 @@ final class PostMetaPropertyCollectionTest extends WP_UnitTestCase {
 		foreach ( $properties as $key => $value ) {
 			$result[ $key ] = $value;
 		}
-		$this->assertArraySubset( [
-			'some_key'    => 'some_value',
-			'another_key' => 'another_value',
-		], $result );
+		$this->assertArrayHasKey( 'some_key', $result );
+		$this->assertArrayHasKey( 'another_key', $result );
+		$this->assertEquals( 'some_value', $result['some_key'] );
+		$this->assertEquals( 'another_value', $result['another_key'] );
 	}
 
 	public function test_it_can_match_on_criteria() {

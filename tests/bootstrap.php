@@ -1,17 +1,13 @@
 <?php
+/**
+ * PHPUnit bootstrap file.
+ *
+ * Enable all error reporting including deprecations
+ * to catch PHP 8.1+ deprecation notices.
+ */
 
-$_tests_dir = getenv( 'WP_TESTS_DIR' );
+// Enable all error reporting including deprecations
+error_reporting(E_ALL);
 
-if ( ! $_tests_dir ) {
-	$_tests_dir = rtrim( sys_get_temp_dir(), '/\\' ) . '/wordpress-tests-lib';
-}
-
-if ( ! file_exists( $_tests_dir . '/includes/functions.php' ) ) {
-	echo "Could not find {$_tests_dir}/includes/functions.php, have you run bin/install-wp-tests.sh ?\n"; // WPCS: XSS ok.
-	exit( 1 );
-}
-
-if ( class_exists( 'PHPUnit\Runner\Version' ) ) {
-	require_once $_tests_dir . '/includes/phpunit6/compat.php';
-}
-require_once $_tests_dir . '/includes/testcase.php';
+// Load composer autoloader
+require_once dirname( __DIR__ ) . '/vendor/autoload.php';

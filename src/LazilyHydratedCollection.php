@@ -47,7 +47,7 @@ abstract class LazilyHydratedCollection implements Collection {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function count() {
+	public function count(): int {
 		// TODO: Make smarter to not automatically hydrate if not needed.
 		$this->hydrate();
 		return $this->collection->count();
@@ -56,15 +56,17 @@ abstract class LazilyHydratedCollection implements Collection {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function add( $element ) {
+	public function add( $element ): bool {
 		$this->hydrate();
-		return $this->collection->add( $element );
+		$result = $this->collection->add( $element );
+		// Doctrine's ArrayCollection::add() returns true or void/null
+		return $result !== false;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function clear() {
+	public function clear(): void {
 		$this->collection = new ArrayCollection();
 		$this->isHydrated = true;
 	}
@@ -72,7 +74,7 @@ abstract class LazilyHydratedCollection implements Collection {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function contains( $element ) {
+	public function contains( $element ): bool {
 		$this->hydrate();
 		return $this->collection->contains( $element );
 	}
@@ -80,13 +82,14 @@ abstract class LazilyHydratedCollection implements Collection {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function isEmpty() {
+	public function isEmpty(): bool {
 		return $this->count() === 0;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
+	#[\ReturnTypeWillChange]
 	public function remove( $key ) {
 		$this->hydrate();
 		return $this->collection->remove( $key );
@@ -95,7 +98,7 @@ abstract class LazilyHydratedCollection implements Collection {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function removeElement( $element ) {
+	public function removeElement( $element ): bool {
 		$this->hydrate();
 		return $this->collection->removeElement( $element );
 	}
@@ -103,7 +106,7 @@ abstract class LazilyHydratedCollection implements Collection {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function containsKey( $key ) {
+	public function containsKey( $key ): bool {
 		$this->hydrate();
 		return $this->collection->containsKey( $key );
 	}
@@ -111,6 +114,7 @@ abstract class LazilyHydratedCollection implements Collection {
 	/**
 	 * {@inheritDoc}
 	 */
+	#[\ReturnTypeWillChange]
 	public function get( $key ) {
 		$this->hydrate();
 		return $this->collection->get( $key );
@@ -119,7 +123,7 @@ abstract class LazilyHydratedCollection implements Collection {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getKeys() {
+	public function getKeys(): array {
 		$this->hydrate();
 		return $this->collection->getKeys();
 	}
@@ -127,7 +131,7 @@ abstract class LazilyHydratedCollection implements Collection {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getValues() {
+	public function getValues(): array {
 		$this->hydrate();
 		return $this->collection->getValues();
 	}
@@ -135,7 +139,7 @@ abstract class LazilyHydratedCollection implements Collection {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function set( $key, $value ) {
+	public function set( $key, $value ): void {
 		$this->hydrate();
 		$this->collection->set( $key, $value );
 	}
@@ -143,7 +147,7 @@ abstract class LazilyHydratedCollection implements Collection {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function toArray() {
+	public function toArray(): array {
 		$this->hydrate();
 		return $this->collection->toArray();
 	}
@@ -151,67 +155,52 @@ abstract class LazilyHydratedCollection implements Collection {
 	/**
 	 * {@inheritDoc}
 	 */
+	#[\ReturnTypeWillChange]
 	public function first() {
 		$this->hydrate();
-		$element = $this->collection->first();
-		if ( false === $element ) {
-			throw new RuntimeException( 'Cannot retrieve the first element of an empty collection.' );
-		}
-		return $element;
+		return $this->collection->first();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
+	#[\ReturnTypeWillChange]
 	public function last() {
 		$this->hydrate();
-		$element = $this->collection->last();
-		if ( false === $element ) {
-			throw new RuntimeException( 'Cannot retrieve the last element of an empty collection.' );
-		}
-		return $element;
+		return $this->collection->last();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
+	#[\ReturnTypeWillChange]
 	public function key() {
 		$this->hydrate();
-		$element = $this->collection->key();
-		if ( false === $element ) {
-			throw new RuntimeException( 'Cannot retrieve the current key of an empty collection.' );
-		}
-		return $element;
+		return $this->collection->key();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
+	#[\ReturnTypeWillChange]
 	public function current() {
 		$this->hydrate();
-		$element = $this->collection->current();
-		if ( false === $element ) {
-			throw new RuntimeException( 'Cannot retrieve the current element of an empty collection.' );
-		}
-		return $element;
+		return $this->collection->current();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
+	#[\ReturnTypeWillChange]
 	public function next() {
 		$this->hydrate();
-		$element = $this->collection->next();
-		if ( false === $element ) {
-			throw new RuntimeException( 'Cannot retrieve the next element of an empty collection.' );
-		}
-		return $element;
+		return $this->collection->next();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function exists( Closure $p ) {
+	public function exists( Closure $p ): bool {
 		$this->hydrate();
 		return $this->collection->exists( $p );
 	}
@@ -219,6 +208,7 @@ abstract class LazilyHydratedCollection implements Collection {
 	/**
 	 * {@inheritDoc}
 	 */
+	#[\ReturnTypeWillChange]
 	public function filter( Closure $p ) {
 		$this->hydrate();
 		return $this->collection->filter( $p );
@@ -227,7 +217,7 @@ abstract class LazilyHydratedCollection implements Collection {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function forAll( Closure $p ) {
+	public function forAll( Closure $p ): bool {
 		$this->hydrate();
 		return $this->collection->forAll( $p );
 	}
@@ -235,6 +225,7 @@ abstract class LazilyHydratedCollection implements Collection {
 	/**
 	 * {@inheritDoc}
 	 */
+	#[\ReturnTypeWillChange]
 	public function map( Closure $func ) {
 		$this->hydrate();
 		return $this->collection->map( $func );
@@ -243,7 +234,7 @@ abstract class LazilyHydratedCollection implements Collection {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function partition( Closure $p ) {
+	public function partition( Closure $p ): array {
 		$this->hydrate();
 		return $this->collection->partition( $p );
 	}
@@ -251,6 +242,7 @@ abstract class LazilyHydratedCollection implements Collection {
 	/**
 	 * {@inheritDoc}
 	 */
+	#[\ReturnTypeWillChange]
 	public function indexOf( $element ) {
 		$this->hydrate();
 		return $this->collection->indexOf( $element );
@@ -259,6 +251,7 @@ abstract class LazilyHydratedCollection implements Collection {
 	/**
 	 * {@inheritDoc}
 	 */
+	#[\ReturnTypeWillChange]
 	public function slice( $offset, $length = null ) {
 		$this->hydrate();
 		return $this->collection->slice( $offset, $length );
@@ -267,7 +260,7 @@ abstract class LazilyHydratedCollection implements Collection {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getIterator() {
+	public function getIterator(): \Traversable {
 		$this->hydrate();
 		return $this->collection->getIterator();
 	}
@@ -275,7 +268,7 @@ abstract class LazilyHydratedCollection implements Collection {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function offsetExists( $offset ) {
+	public function offsetExists( $offset ): bool {
 		$this->hydrate();
 		return $this->collection->offsetExists( $offset );
 	}
@@ -283,6 +276,7 @@ abstract class LazilyHydratedCollection implements Collection {
 	/**
 	 * {@inheritDoc}
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetGet( $offset ) {
 		$this->hydrate();
 		return $this->collection->offsetGet( $offset );
@@ -291,7 +285,7 @@ abstract class LazilyHydratedCollection implements Collection {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function offsetSet( $offset, $value ) {
+	public function offsetSet( $offset, $value ): void {
 		$this->hydrate();
 		$this->collection->offsetSet( $offset, $value );
 	}
@@ -299,9 +293,44 @@ abstract class LazilyHydratedCollection implements Collection {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function offsetUnset( $offset ) {
+	public function offsetUnset( $offset ): void {
 		$this->hydrate();
 		$this->collection->offsetUnset( $offset );
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	#[\ReturnTypeWillChange]
+	public function findFirst( Closure $p ) {
+		$this->hydrate();
+		if ( method_exists( $this->collection, 'findFirst' ) ) {
+			return $this->collection->findFirst( $p );
+		}
+		// Fallback for older Doctrine versions
+		foreach ( $this->collection as $key => $element ) {
+			if ( $p( $key, $element ) ) {
+				return $element;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	#[\ReturnTypeWillChange]
+	public function reduce( Closure $func, $initial = null ) {
+		$this->hydrate();
+		if ( method_exists( $this->collection, 'reduce' ) ) {
+			return $this->collection->reduce( $func, $initial );
+		}
+		// Fallback for older Doctrine versions
+		$accumulator = $initial;
+		foreach ( $this->collection as $element ) {
+			$accumulator = $func( $accumulator, $element );
+		}
+		return $accumulator;
 	}
 
 	/**

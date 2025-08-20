@@ -130,7 +130,7 @@ class Criteria extends DoctrineCommonCriteria {
 		// Nothing to merge, just return non-null criteria.
 		// If both are NullCriteria, a NullCriteria will be returned.
 		if ( $this instanceof NullCriteria ) {
-			return static::from( $that );
+			return Criteria::from( $that );
 		}
 		if ( $that instanceof NullCriteria ) {
 			return clone $this;

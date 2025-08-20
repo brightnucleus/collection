@@ -80,7 +80,7 @@ abstract class AbstractPropertyCollection
 	/**
 	 * {@inheritDoc}
 	 */
-	public function containsKey( $key ) {
+	public function containsKey( $key ): bool {
 		$this->hydrate();
 		return $this->exists(
 			function ( $index, $element ) use ( $key ) {
@@ -93,15 +93,17 @@ abstract class AbstractPropertyCollection
 	/**
 	 * {@inheritDoc}
 	 */
-	public function add( $element ) {
+	public function add( $element ): bool {
 		$this->hydrate();
 		$element = $this->normalizeEntity( $element );
-		return $this->collection[ $element->getKey() ] = $element;
+		$this->collection[ $element->getKey() ] = $element;
+		return true;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
+	#[\ReturnTypeWillChange]
 	public function get( $key ) {
 		if ( $this->isHydrated ) {
 			return $this->getProperty( $key )->getValue();
@@ -134,7 +136,7 @@ abstract class AbstractPropertyCollection
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getIterator() {
+	public function getIterator(): \Traversable {
 		$this->hydrate();
 		return new ArrayIterator( $this->toArray() );
 	}
@@ -207,7 +209,7 @@ abstract class AbstractPropertyCollection
 	/**
 	 * {@inheritDoc}
 	 */
-	public function toArray() {
+	public function toArray(): array {
 		$properties = parent::toArray();
 
 		return array_map(

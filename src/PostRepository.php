@@ -47,4 +47,37 @@ final class PostRepository extends PostTypeRepository {
 	protected static function getCollectionClass(): string {
 		return PostCollection::class;
 	}
+
+	/**
+	 * Get the property-to-post-field mappings for a given entity.
+	 *
+	 * @param Entity $entity Entity to get the mappings for.
+	 * @return array Array of property-to-post-field mappings.
+	 */
+	protected function get_properties_to_post_mappings( Entity $entity ): array {
+		// Return empty array as PostRepository doesn't need custom mappings
+		return [];
+	}
+
+	/**
+	 * Get the property-to-postmeta mappings for a given entity.
+	 *
+	 * @param Entity $entity Entity to get the mappings for.
+	 * @return array Array of property-to-postmeta mappings.
+	 */
+	protected function get_properties_to_postmeta_mappings( Entity $entity ): array {
+		// Return empty array as PostRepository doesn't need custom mappings
+		return [];
+	}
+
+	/**
+	 * Get the property-to-taxonomy mappings for a given entity.
+	 *
+	 * @param Entity $entity Entity to get the mappings for.
+	 * @return array Array of property-to-taxonomy mappings.
+	 */
+	protected function get_properties_to_taxonomies_mappings( Entity $entity ): array {
+		// Return empty array as PostRepository doesn't need custom mappings
+		return [];
+	}
 }
