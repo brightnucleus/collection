@@ -11,17 +11,21 @@
 
 namespace BrightNucleus\Collection;
 
-trait ID {
+trait ID
+{
 
-	/** @var int|string */
-	protected $id;
+    /**
+     * @var int|string 
+     */
+    protected $id;
 
-	/**
-	 * Get the ID of the entity.
-	 *
-	 * @return int|string ID.
-	 */
-	public function getId() {
-		return $this->id;
-	}
+    /**
+     * Get the ID of the entity.
+     *
+     * @return int|string ID.
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
 }

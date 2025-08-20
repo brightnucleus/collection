@@ -13,5 +13,6 @@ namespace BrightNucleus\Collection;
 
 use Doctrine\Common\Collections\ArrayCollection as DoctrineArrayCollection;
 
-class ArrayCollection extends DoctrineArrayCollection implements Collection {
+class ArrayCollection extends DoctrineArrayCollection implements Collection
+{
 }

@@ -17,14 +17,16 @@ namespace BrightNucleus\Collection;
  * @package BrightNucleus\Collection
  * @author  Alain Schlesser <alain.schlesser@gmail.com>
  */
-class PostMetaPropertyCollection extends AbstractPropertyCollection {
+class PostMetaPropertyCollection extends AbstractPropertyCollection
+{
 
-	/**
-	 * Get the query generator to use.
-	 *
-	 * @return QueryGenerator
-	 */
-	protected function getQueryGenerator(): QueryGenerator {
-		return new PostMetaQueryGenerator( $this->criteria );
-	}
+    /**
+     * Get the query generator to use.
+     *
+     * @return QueryGenerator
+     */
+    protected function getQueryGenerator(): QueryGenerator
+    {
+        return new PostMetaQueryGenerator($this->criteria);
+    }
 }

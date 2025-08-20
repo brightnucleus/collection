@@ -13,23 +13,26 @@ namespace BrightNucleus\Collection;
 
 use Doctrine\Common\Collections\Expr\ExpressionVisitor;
 
-final class PostMetaQueryGenerator extends WPQueryGenerator {
+final class PostMetaQueryGenerator extends WPQueryGenerator
+{
 
-	/**
-	 * Get the expression visitor instance to use.
-	 *
-	 * @return ExpressionVisitor
-	 */
-	protected function getVisitor(): ExpressionVisitor {
-		return new WPMetaQuerySQLExpressionVisitor( $this->getTableName() );
-	}
+    /**
+     * Get the expression visitor instance to use.
+     *
+     * @return ExpressionVisitor
+     */
+    protected function getVisitor(): ExpressionVisitor
+    {
+        return new WPMetaQuerySQLExpressionVisitor($this->getTableName());
+    }
 
-	/**
-	 * Get the name of the table to query against.
-	 *
-	 * @return string Name of the table to query against.
-	 */
-	protected function getTableName(): string {
-		return 'postmeta';
-	}
+    /**
+     * Get the name of the table to query against.
+     *
+     * @return string Name of the table to query against.
+     */
+    protected function getTableName(): string
+    {
+        return 'postmeta';
+    }
 }

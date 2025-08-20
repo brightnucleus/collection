@@ -11,6 +11,7 @@
 
 namespace BrightNucleus\Collection;
 
-interface EntityCollection extends Collection {
+interface EntityCollection extends Collection
+{
 
 }

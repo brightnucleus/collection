@@ -11,11 +11,12 @@
 
 namespace BrightNucleus\Collection;
 
-interface Table {
+interface Table
+{
 
-	const POSTS              = 'posts';
-	const POSTMETA           = 'postmeta';
-	const TERM_RELATIONSHIPS = 'term_relationships';
-	const TERM_TAXONOMY      = 'term_taxonomy';
-	const TERMS              = 'terms';
+    const POSTS              = 'posts';
+    const POSTMETA           = 'postmeta';
+    const TERM_RELATIONSHIPS = 'term_relationships';
+    const TERM_TAXONOMY      = 'term_taxonomy';
+    const TERMS              = 'terms';
 }

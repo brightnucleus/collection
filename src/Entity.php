@@ -11,12 +11,13 @@
 
 namespace BrightNucleus\Collection;
 
-interface Entity {
+interface Entity
+{
 
-	/**
-	 * Get the ID of the entity.
-	 *
-	 * @return mixed ID.
-	 */
-	public function getId();
+    /**
+     * Get the ID of the entity.
+     *
+     * @return mixed ID.
+     */
+    public function getId();
 }

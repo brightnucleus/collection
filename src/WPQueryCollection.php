@@ -17,5 +17,6 @@ namespace BrightNucleus\Collection;
  * @package BrightNucleus\Collection
  * @author  Alain Schlesser <alain.schlesser@gmail.com>
  */
-interface WPQueryCollection extends Collection, Selectable {
+interface WPQueryCollection extends Collection, Selectable
+{
 }

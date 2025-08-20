@@ -11,15 +11,16 @@
 
 namespace BrightNucleus\Collection;
 
-interface HasEntityWrapper {
+interface HasEntityWrapper
+{
 
-	/**
-	 * Get the class to be used to wrap entities.
-	 *
-	 * The wrapper class will need to accept a WP_Post object in its
-	 * constructor.
-	 *
-	 * @return string
-	 */
-	public static function getEntityWrapperClass(): string;
+    /**
+     * Get the class to be used to wrap entities.
+     *
+     * The wrapper class will need to accept a WP_Post object in its
+     * constructor.
+     *
+     * @return string
+     */
+    public static function getEntityWrapperClass(): string;
 }

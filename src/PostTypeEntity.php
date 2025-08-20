@@ -13,19 +13,20 @@ namespace BrightNucleus\Collection;
 
 use WP_Post;
 
-interface PostTypeEntity extends Entity {
+interface PostTypeEntity extends Entity
+{
 
-	/**
-	 * Get the internal post object that the listing is based on.
-	 *
-	 * @return WP_Post Internal post object.
-	 */
-	public function get_post_object(): WP_Post;
+    /**
+     * Get the internal post object that the listing is based on.
+     *
+     * @return WP_Post Internal post object.
+     */
+    public function get_post_object(): WP_Post;
 
-	/**
-	 * Get the internal post object that the listing is based on.
-	 *
-	 * @param WP_Post $post Internal post object.
-	 */
-	public function set_post_object( WP_Post $post ): void;
+    /**
+     * Get the internal post object that the listing is based on.
+     *
+     * @param WP_Post $post Internal post object.
+     */
+    public function set_post_object( WP_Post $post ): void;
 }

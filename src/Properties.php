@@ -11,17 +11,21 @@
 
 namespace BrightNucleus\Collection;
 
-trait Properties {
+trait Properties
+{
 
-	/** @var PropertyCollection */
-	protected $properties;
+    /**
+     * @var PropertyCollection 
+     */
+    protected $properties;
 
-	/**
-	 * Get the collection of properties for the given Entity.
-	 *
-	 * @return PropertyCollection
-	 */
-	public function getProperties(): PropertyCollection {
-		return $this->properties;
-	}
+    /**
+     * Get the collection of properties for the given Entity.
+     *
+     * @return PropertyCollection
+     */
+    public function getProperties(): PropertyCollection
+    {
+        return $this->properties;
+    }
 }

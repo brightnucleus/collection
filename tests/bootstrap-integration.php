@@ -39,13 +39,14 @@ if (!$wp_tests_dir) {
 
 // Give access to tests_add_filter() function
 if (file_exists($wp_tests_dir . '/includes/functions.php')) {
-    require_once $wp_tests_dir . '/includes/functions.php';
+    include_once $wp_tests_dir . '/includes/functions.php';
 } else {
     die("WordPress test suite not found. Please run 'npm install -g @wordpress/env && wp-env start' first.\n");
 }
 
 // Manually load the plugin for testing
-function _manually_load_plugin() {
+function _manually_load_plugin()
+{
     // Since this is a library, not a plugin, we just ensure autoloading works
     // The actual WordPress functionality is tested through the collections
 }

@@ -11,12 +11,13 @@
 
 namespace BrightNucleus\Collection;
 
-interface HasProperties {
+interface HasProperties
+{
 
-	/**
-	 * Get the collection of properties for the given Entity.
-	 *
-	 * @return PropertyCollection
-	 */
-	public function getProperties(): PropertyCollection;
+    /**
+     * Get the collection of properties for the given Entity.
+     *
+     * @return PropertyCollection
+     */
+    public function getProperties(): PropertyCollection;
 }

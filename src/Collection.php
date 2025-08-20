@@ -13,6 +13,7 @@ namespace BrightNucleus\Collection;
 
 use Doctrine\Common\Collections\Collection as DoctrineCollection;
 
-interface Collection extends DoctrineCollection {
+interface Collection extends DoctrineCollection
+{
 
 }

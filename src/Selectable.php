@@ -14,12 +14,13 @@ namespace BrightNucleus\Collection;
 use Doctrine\Common\Collections\Selectable as DoctrineSelectable;
 use Doctrine\Common\Collections\Criteria as DoctrineCriteria;
 
-interface Selectable extends DoctrineSelectable {
+interface Selectable extends DoctrineSelectable
+{
 
-	/**
-	 * Get the current criteria of the selectable.
-	 *
-	 * @return DoctrineCriteria Current criteria of the selectable.
-	 */
-	public function getCriteria(): DoctrineCriteria;
+    /**
+     * Get the current criteria of the selectable.
+     *
+     * @return DoctrineCriteria Current criteria of the selectable.
+     */
+    public function getCriteria(): DoctrineCriteria;
 }

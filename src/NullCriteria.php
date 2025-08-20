@@ -11,6 +11,7 @@
 
 namespace BrightNucleus\Collection;
 
-final class NullCriteria extends Criteria {
+final class NullCriteria extends Criteria
+{
 
 }

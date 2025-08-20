@@ -13,28 +13,29 @@ namespace BrightNucleus\Collection;
 
 use Doctrine\Common\Collections\Criteria as DoctrineCriteria;
 
-interface Scope {
+interface Scope
+{
 
-	/**
-	 * Add one or more values to the Scope.
-	 *
-	 * @param mixed ...$scope Value(s) to add.
-	 * @return Scope Modified Scope.
-	 */
-	public function add( ...$scope ): Scope;
+    /**
+     * Add one or more values to the Scope.
+     *
+     * @param  mixed ...$scope Value(s) to add.
+     * @return Scope Modified Scope.
+     */
+    public function add( ...$scope ): Scope;
 
-	/**
-	 * Merge the Scope with another Scope and return the merged result.
-	 *
-	 * @param Scope $scope Scope to merge with.
-	 * @return Scope Merged Scope.
-	 */
-	public function mergeWith( Scope $scope ): Scope;
+    /**
+     * Merge the Scope with another Scope and return the merged result.
+     *
+     * @param  Scope $scope Scope to merge with.
+     * @return Scope Merged Scope.
+     */
+    public function mergeWith( Scope $scope ): Scope;
 
-	/**
-	 * Get the Criteria for the current Scope.
-	 *
-	 * @return DoctrineCriteria Criteria representing the Scope.
-	 */
-	public function getCriteria(): DoctrineCriteria;
+    /**
+     * Get the Criteria for the current Scope.
+     *
+     * @return DoctrineCriteria Criteria representing the Scope.
+     */
+    public function getCriteria(): DoctrineCriteria;
 }

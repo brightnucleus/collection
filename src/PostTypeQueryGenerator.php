@@ -11,14 +11,16 @@
 
 namespace BrightNucleus\Collection;
 
-final class PostTypeQueryGenerator extends WPQueryGenerator {
+final class PostTypeQueryGenerator extends WPQueryGenerator
+{
 
-	/**
-	 * Get the name of the table to query against.
-	 *
-	 * @return string Name of the table to query against.
-	 */
-	protected function getTableName(): string {
-		return 'posts';
-	}
+    /**
+     * Get the name of the table to query against.
+     *
+     * @return string Name of the table to query against.
+     */
+    protected function getTableName(): string
+    {
+        return 'posts';
+    }
 }
