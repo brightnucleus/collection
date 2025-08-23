@@ -11,12 +11,10 @@
 
 namespace BrightNucleus\Collection;
 
+use BrightNucleus\Collection\Criteria;
 use BrightNucleus\Exception\InvalidArgumentException;
-use BrightNucleus\Exception\RuntimeException;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Criteria;
 use stdClass;
-use WP_Post;
 use WP_Query;
 
 /**

@@ -11,16 +11,28 @@
 
 namespace BrightNucleus\Collection;
 
-use Doctrine\Common\Collections\Selectable as DoctrineSelectable;
-use Doctrine\Common\Collections\Criteria as DoctrineCriteria;
-
-interface Selectable extends DoctrineSelectable
+/**
+ * Interface for collections that allow efficient filtering with criteria.
+ * 
+ * This interface is independent of Doctrine to provide isolation from
+ * third-party API changes.
+ */
+interface Selectable
 {
+    /**
+     * Selects all elements from a selectable that match the criteria and
+     * returns a new collection containing these elements.
+     *
+     * @param Criteria $criteria
+     *
+     * @return Collection&Selectable
+     */
+    public function matching(Criteria $criteria);
 
     /**
      * Get the current criteria of the selectable.
      *
-     * @return DoctrineCriteria Current criteria of the selectable.
+     * @return Criteria Current criteria of the selectable.
      */
-    public function getCriteria(): DoctrineCriteria;
+    public function getCriteria(): Criteria;
 }

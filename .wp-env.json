@@ -8,6 +8,7 @@
         "WP_DEBUG_DISPLAY": false,
         "SCRIPT_DEBUG": true
     },
+    "port": 8890,
     "mappings": {
         "wp-content/plugins/brightnucleus-collection": "."
     },
@@ -20,8 +21,8 @@
                 "SCRIPT_DEBUG": true,
                 "WP_PHPUNIT__TESTS_CONFIG": "wp-tests-config.php"
             },
-            "port": 8889,
-            "mysqlPort": 33069
+            "port": 8891,
+            "mysqlPort": 33070
         }
     }
 }
